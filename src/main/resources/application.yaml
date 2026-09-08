@@ -1,0 +1,26 @@
+spring:
+  application:
+    name: metalmod-core
+
+  datasource:
+    url: jdbc:postgresql://localhost:5432/metalmod_core
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:Mme010$}
+    driver-class-name: org.postgresql.Driver
+
+  jpa:
+    hibernate:
+      # 'validate' porque Flyway es quien manda en el esquema, no Hibernate
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        format_sql: true
+
+  flyway:
+    enabled: true
+    locations: classpath:db/migration
+    baseline-on-migrate: true
+
+server:
+  port: 8080
