@@ -19,5 +19,5 @@ public record MantenimientoResponseDto(
 
         // Datos de la Refacción
         Long idRefaccion,
-        String codigoRefaccion // Extraído de la entidad Refaccion (si aplica)
+        String nombreRefaccion // Extraído de la entidad Refaccion (si aplica)
 ) {}
