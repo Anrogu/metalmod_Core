@@ -17,12 +17,13 @@ public interface OrdenVentaMapper {
     @Mapping(source = "idEstado.nombre", target = "estadoActual") // Cambia "descripcion" si el estado usa "nombre" o "codigo"
     OrdenVentaResponseDto toResponse(OrdenVenta ordenVenta);
 
-    // 2. DTO de Entrada (Request) -> Entidad
+
+// 2. DTO de Entrada (Request) -> Entidad
     @Mapping(target = "id", ignore = true)
     @Mapping(target = "idCliente", ignore = true)
-    @Mapping(target = "idUsuarioCreo", ignore = true) // El backend asignará el usuario desde el SecurityContext
+    @Mapping(target = "idUsuarioCreo", ignore = true)
     @Mapping(target = "idEstado", ignore = true)
-    @Mapping(target = "fechaCreacion", ignore = true) // El backend asignará Instant.now()
-
+    @Mapping(target = "fechaCreacion", ignore = true)
+    @Mapping(target = "detalles", ignore = true) // <-- EL CAMBIO CLAVE ESTÁ AQUÍ
     OrdenVenta toEntity(OrdenVentaRequestDto request);
 }

@@ -1,0 +1,122 @@
+.source-panel {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.source-panel__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.03em;
+}
+
+.source-panel__cloud-btn {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  border: 1px solid var(--accent-dim);
+  background: linear-gradient(180deg, rgba(232, 93, 37, 0.14), rgba(232, 93, 37, 0.05));
+  color: var(--text);
+  padding: 12px 14px;
+  cursor: pointer;
+  text-align: left;
+  transition: background 0.15s ease, border-color 0.15s ease;
+}
+
+.source-panel__cloud-btn:hover:not(:disabled) {
+  background: linear-gradient(180deg, rgba(232, 93, 37, 0.22), rgba(232, 93, 37, 0.08));
+  border-color: var(--accent);
+}
+
+.source-panel__cloud-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.source-panel__cloud-btn svg {
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.source-panel__cloud-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.source-panel__cloud-sub {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-muted);
+  margin-top: 2px;
+}
+
+.source-panel__divider {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.source-panel__divider::before,
+.source-panel__divider::after {
+  content: "";
+  flex: 1;
+  height: 1px;
+  background: var(--line);
+}
+
+.source-panel__drop {
+  border: 1px dashed var(--line-strong);
+  padding: 22px 14px;
+  text-align: center;
+  cursor: pointer;
+  color: var(--text-muted);
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.source-panel__drop svg {
+  color: var(--text-faint);
+  margin-bottom: 8px;
+}
+
+.source-panel__drop p {
+  margin: 0;
+  font-size: 12.5px;
+  line-height: 1.5;
+}
+
+.source-panel__drop strong {
+  color: var(--text);
+}
+
+.source-panel__drop.is-active {
+  border-color: var(--accent);
+  background: rgba(232, 93, 37, 0.06);
+}
+
+.source-panel__origin {
+  border-top: 1px solid var(--line);
+  padding-top: 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.source-panel__origin-label {
+  font-family: var(--font-mono);
+  font-size: 10.5px;
+  color: var(--text-faint);
+  text-transform: lowercase;
+}
+
+.source-panel__origin-value {
+  font-size: 12.5px;
+  color: var(--text);
+  overflow-wrap: anywhere;
+}

@@ -1,0 +1,89 @@
+.chart-panel {
+  padding: 18px 20px 24px;
+  min-height: 520px;
+  display: flex;
+  flex-direction: column;
+}
+
+.chart-panel__head {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+  margin-bottom: 18px;
+  padding-bottom: 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.chart-panel__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+}
+
+.chart-panel__title {
+  font-family: var(--font-display);
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.chart-panel__body {
+  flex: 1;
+  display: flex;
+}
+
+.chart-state {
+  margin: auto;
+  text-align: center;
+  color: var(--text-faint);
+  max-width: 320px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+}
+
+.chart-state p {
+  font-size: 13px;
+  line-height: 1.6;
+  margin: 0;
+}
+
+.chart-state--error {
+  color: var(--err);
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  border: 2px solid var(--line);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+.chart-panel__tabs {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.chart-panel__tab {
+  padding: 4px 12px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+  color: #929aa2;
+  background: transparent;
+  border: 1px solid #3a4148;
+  cursor: pointer;
+}
+
+.chart-panel__tab.is-active {
+  color: #edeae3;
+  background: #e85d25;
+  border-color: #e85d25;
+}
