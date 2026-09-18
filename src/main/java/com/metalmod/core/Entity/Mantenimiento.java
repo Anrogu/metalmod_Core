@@ -48,5 +48,11 @@ public class Mantenimiento {
     @JoinColumn(name = "id_refaccion")
     private Refaccion idRefaccion;
 
+    @Column(name= "tecnico", length = 100)
+    private String tecnico;
+
+
+    @Column(name= "tiempo_invertido_minutos")
+    private Integer tiempoInvertidoMinutos;
 
 }

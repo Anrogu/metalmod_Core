@@ -1,23 +1,26 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import SourcePanel from "./components/SourcePanel";
 import Readouts from "./components/Readouts";
 import MetricsChart from "./components/MetricsChart";
-import { obtenerMetricasCloud, obtenerMetricasDesdeArchivo } from "./api/dashboardApi";
+import MaquinasPage from "./components/MaquinasPage";
 import "./App.css";
+
+const API_BASE = "http://localhost:8080/api/v1/dashboard";
 
 export default function App() {
   const [metricas, setMetricas] = useState([]);
   const [estado, setEstado] = useState("idle"); // idle | loading | ready | error
-  const [origen, setOrigen] = useState(null); // "cloud" | archivo.name
+  const [origen, setOrigen] = useState(null);
   const [errorMsg, setErrorMsg] = useState("");
+  const [vistaApp, setVistaApp] = useState("dashboard"); // dashboard | maquinas
 
-  async function cargarDesdeNube() {
+  async function cargarDesdeBaseDeDatos() {
     setEstado("loading");
     setErrorMsg("");
     try {
-      const data = await obtenerMetricasCloud();
+      const data = await obtenerRegistrosDb();
       setMetricas(data);
-      setOrigen("Sincronización en la nube");
+      setOrigen("Base de datos");
       setEstado("ready");
     } catch (err) {
       setEstado("error");
@@ -25,19 +28,10 @@ export default function App() {
     }
   }
 
-  async function cargarDesdeArchivo(file) {
-    setEstado("loading");
-    setErrorMsg("");
-    try {
-      const data = await obtenerMetricasDesdeArchivo(file);
-      setMetricas(data);
-      setOrigen(file.name);
-      setEstado("ready");
-    } catch (err) {
-      setEstado("error");
-      setErrorMsg(mensajeDeError(err));
-    }
-  }
+  // Carga automatica al entrar al panel, ya no hace falta sincronizar manualmente
+  useEffect(() => {
+    cargarDesdeBaseDeDatos();
+  }, []);
 
   return (
     <div className="shell">
@@ -65,27 +59,75 @@ export default function App() {
         </div>
       </header>
 
-      <main className="layout">
-        <section className="layout__side">
-          <SourcePanel
-            estado={estado}
-            origen={origen}
-            onCargarNube={cargarDesdeNube}
-            onCargarArchivo={cargarDesdeArchivo}
-          />
-          <Readouts refacciones={metricas} estado={estado} />
-        </section>
+      <nav style={{ display: "flex", gap: "8px", padding: "16px 24px 0" }}>
+        <button
+          type="button"
+          onClick={() => setVistaApp("dashboard")}
+          style={{
+            padding: "6px 14px",
+            border: `1px solid ${vistaApp === "dashboard" ? "#e85d25" : "#3a4148"}`,
+            background: vistaApp === "dashboard" ? "rgba(232, 93, 37, 0.1)" : "transparent",
+            color: vistaApp === "dashboard" ? "#e85d25" : "#929aa2",
+            cursor: "pointer",
+            fontFamily: "IBM Plex Sans",
+            fontSize: "13px",
+          }}
+        >
+          Panel de métricas
+        </button>
+        <button
+          type="button"
+          onClick={() => setVistaApp("maquinas")}
+          style={{
+            padding: "6px 14px",
+            border: `1px solid ${vistaApp === "maquinas" ? "#e85d25" : "#3a4148"}`,
+            background: vistaApp === "maquinas" ? "rgba(232, 93, 37, 0.1)" : "transparent",
+            color: vistaApp === "maquinas" ? "#e85d25" : "#929aa2",
+            cursor: "pointer",
+            fontFamily: "IBM Plex Sans",
+            fontSize: "13px",
+          }}
+        >
+          Máquinas
+        </button>
+      </nav>
 
-        <section className="layout__main">
-          <MetricsChart
-            refacciones={metricas}
-            estado={estado}
-            errorMsg={errorMsg}
-          />
-        </section>
-      </main>
+      {vistaApp === "maquinas" ? (
+        <main className="layout" style={{ display: "block", padding: "24px" }}>
+          <MaquinasPage />
+        </main>
+      ) : (
+        <main className="layout">
+          <section className="layout__side">
+            <SourcePanel
+              estado={estado}
+              origen={origen}
+              onActualizar={cargarDesdeBaseDeDatos}
+            />
+            <Readouts refacciones={metricas} estado={estado} />
+          </section>
+
+          <section className="layout__main">
+            <MetricsChart
+              refacciones={metricas}
+              estado={estado}
+              errorMsg={errorMsg}
+            />
+          </section>
+        </main>
+      )}
     </div>
   );
+}
+
+async function obtenerRegistrosDb() {
+  const res = await fetch(`${API_BASE}/registros`);
+  if (!res.ok) {
+    const error = new Error("Error de servidor");
+    error.response = { status: res.status };
+    throw error;
+  }
+  return res.json();
 }
 
 function textoEstado(estado) {
@@ -103,7 +145,7 @@ function textoEstado(estado) {
 
 function mensajeDeError(err) {
   if (err.response) {
-    return `El servidor respondió con error ${err.response.status}. Verifica el archivo o la conexión con la nube.`;
+    return `El servidor respondió con error ${err.response.status}. Verifica que metalmod-core esté corriendo.`;
   }
   if (err.request) {
     return "No se obtuvo respuesta del backend. Confirma que metalmod-core esté corriendo y accesible.";
