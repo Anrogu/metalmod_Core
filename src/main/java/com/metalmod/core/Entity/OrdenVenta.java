@@ -9,6 +9,8 @@ import org.hibernate.annotations.ColumnDefault;
 
 import java.time.Instant;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Getter
 @Setter
@@ -48,5 +50,6 @@ public class OrdenVenta {
     @JoinColumn(name = "id_estado", nullable = false)
     private EstadoOrdenVenta idEstado;
 
-
+    @OneToMany(mappedBy = "idOrdenVenta", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<DetalleOrdenVenta> detalles = new ArrayList<>();
 }

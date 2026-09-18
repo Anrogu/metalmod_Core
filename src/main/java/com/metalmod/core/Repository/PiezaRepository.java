@@ -9,5 +9,5 @@ import java.util.List;
 
 @Repository
 public interface PiezaRepository extends JpaRepository<Pieza, Long> {
-
+    List<Pieza> findByNombreContainingIgnoreCase(String nombre);
 }

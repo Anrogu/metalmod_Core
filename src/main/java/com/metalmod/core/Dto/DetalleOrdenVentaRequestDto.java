@@ -3,6 +3,7 @@ package com.metalmod.core.Dto;
 import jakarta.validation.constraints.NotNull;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.List;
 
 public record DetalleOrdenVentaRequestDto(
         @NotNull(message = "La pieza es obligatoria")
@@ -18,4 +19,5 @@ public record DetalleOrdenVentaRequestDto(
 
         @NotNull(message = "El estado inicial es obligatorio")
         Long idEstado
-) {}
+)        {
+}

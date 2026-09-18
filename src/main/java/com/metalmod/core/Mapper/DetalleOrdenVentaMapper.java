@@ -10,9 +10,11 @@ import org.springframework.stereotype.Component;
 
 @Mapper(componentModel = "spring")
 public interface    DetalleOrdenVentaMapper {
-    @Mapping(source = "idPieza.id", target = "id")
-    @Mapping(source = "idPieza.nombre", target = "numeroPieza")
-    @Mapping(source = "idPieza.descripcion", target = "descripcionPieza")
+    @Mapping(source = "idPieza.nombre", target = "numeroPieza") // Extrae el nombre de la Pieza
+    @Mapping(source = "idPieza.descripcion", target = "descripcionPieza") // Extrae la descripción
+    @Mapping(source = "idEstado.nombre", target = "estadoActual") // Extrae el nombre del estado (ej. "Pendiente")
+        // Eliminamos el mapeo erróneo del ID. Al no poner nada, MapStruct mapeará
+        // el campo 'id' de DetalleOrdenVenta al campo 'id' del DTO automáticamente.
     DetalleOrdenVentaResponseDto toResponse(DetalleOrdenVenta detalle);
 
     @Mapping(target = "id", ignore = true)

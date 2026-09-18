@@ -24,3 +24,12 @@ spring:
 
 server:
   port: 8080
+
+azure:
+  tenant-id: "TU_TENANT_ID_DE_AZURE"
+  client-id: "TU_CLIENT_ID_DE_LA_APP"
+  client-secret: "TU_CLIENT_SECRET"
+
+excel:
+  file:
+    item-id: "ID_DEL_ARCHIVO_EN_CLOUD"
