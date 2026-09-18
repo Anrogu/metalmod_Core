@@ -1,31 +1,37 @@
 package com.metalmod.core.Dto;
 
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record MantenimientoRequestDto(
-        @NotNull(message = "La máquina es obligatoria")
+
+        @NotNull
         Long idMaquina,
 
-        @NotNull(message = "La fecha es obligatoria")
+        @NotNull
         LocalDate fecha,
 
-        @NotBlank(message = "La descripción de la falla es obligatoria")
-        @Size(max = 255, message = "La falla no puede exceder los 255 caracteres")
+        @NotBlank
+        @Size(max = 255)
         String falla,
 
-        @Size(max = 255, message = "La solución no puede exceder los 255 caracteres")
+        @Size(max = 255)
         String solucion,
 
-        @Size(max = 150, message = "El proveedor no puede exceder los 150 caracteres")
+        @Size(max = 150)
         String proveedor,
 
+        @PositiveOrZero
         BigDecimal costo,
 
-        // Corregido: eliminado el sufijo redundante "Id"
-        Long idRefaccion
-) {}
+        Long idRefaccion, // opcional: solo si la reparacion uso una refaccion catalogada
+
+        @Size(max = 150)
+        String tecnico,
+
+        @PositiveOrZero
+        Integer tiempoInvertidoMinutos
+) {
+}
