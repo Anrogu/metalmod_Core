@@ -27,19 +27,23 @@ export default function MaquinasPage() {
   const [form, setForm] = useState(FORM_VACIO);
   const [editandoId, setEditandoId] = useState(null);
   const [cargando, setCargando] = useState(false);
+  
   const [error, setError] = useState("");
-  const [pagina, setPagina] = useState(0);
+  const [mensajeExito, setMensajeExito] = useState(""); 
+  
+  const [busqueda, setBusqueda] = useState("");         
+  const [filtroMarca, setFiltroMarca] = useState("");
+  const [filtroEstado, setFiltroEstado] = useState("");
 
-  const totalPaginas = Math.max(1, Math.ceil(maquinas.length / MAQUINAS_POR_PAGINA));
-  const paginaSegura = Math.min(pagina, totalPaginas - 1);
-  const maquinasPagina = maquinas.slice(
-    paginaSegura * MAQUINAS_POR_PAGINA,
-    paginaSegura * MAQUINAS_POR_PAGINA + MAQUINAS_POR_PAGINA
-  );
+  const [pagina, setPagina] = useState(0);
 
   useEffect(() => {
     cargarTodo();
   }, []);
+
+  useEffect(() => {
+    setPagina(0);
+  }, [busqueda, filtroMarca, filtroEstado]);
 
   async function cargarTodo() {
     setCargando(true);
@@ -60,6 +64,26 @@ export default function MaquinasPage() {
     }
   }
 
+  const maquinasFiltradas = maquinas.filter((m) => {
+    const coincideTexto = !busqueda || (
+      (m.nombre && m.nombre.toLowerCase().includes(busqueda.toLowerCase())) ||
+      (m.descripcion && m.descripcion.toLowerCase().includes(busqueda.toLowerCase())) ||
+      (m.nombreModelo && m.nombreModelo.toLowerCase().includes(busqueda.toLowerCase()))
+    );
+
+    const coincideMarca = !filtroMarca || m.idMarca === Number(filtroMarca);
+    const coincideEstado = !filtroEstado || m.codigoEstado === filtroEstado;
+
+    return coincideTexto && coincideMarca && coincideEstado;
+  });
+
+  const totalPaginas = Math.max(1, Math.ceil(maquinasFiltradas.length / MAQUINAS_POR_PAGINA));
+  const paginaSegura = Math.min(pagina, totalPaginas - 1);
+  const maquinasPagina = maquinasFiltradas.slice(
+    paginaSegura * MAQUINAS_POR_PAGINA,
+    paginaSegura * MAQUINAS_POR_PAGINA + MAQUINAS_POR_PAGINA
+  );
+
   function actualizarCampo(campo, valor) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
@@ -79,9 +103,17 @@ export default function MaquinasPage() {
     setForm(FORM_VACIO);
   }
 
+  function mostrarExito(mensaje) {
+    setMensajeExito(mensaje);
+    setTimeout(() => {
+      setMensajeExito("");
+    }, 3000);
+  }
+
   async function manejarSubmit(e) {
     e.preventDefault();
     setError("");
+    setMensajeExito("");
 
     const payload = {
       nombre: form.nombre.trim(),
@@ -93,8 +125,10 @@ export default function MaquinasPage() {
     try {
       if (editandoId) {
         await actualizarMaquina(editandoId, payload);
+        mostrarExito("¡La máquina se actualizó correctamente!");
       } else {
         await crearMaquina(payload);
+        mostrarExito("¡Máquina registrada correctamente!");
       }
       cancelarEdicion();
       await cargarTodo();
@@ -108,6 +142,7 @@ export default function MaquinasPage() {
     try {
       await cambiarEstadoMaquina(id, codigoEstado);
       await cargarTodo();
+      mostrarExito("¡El estado de la máquina se actualizó correctamente!");
     } catch (err) {
       setError(err.message);
     }
@@ -119,6 +154,12 @@ export default function MaquinasPage() {
 
   function irPaginaSiguiente() {
     setPagina((p) => Math.min(totalPaginas - 1, p + 1));
+  }
+
+  function limpiarFiltros() {
+    setBusqueda("");
+    setFiltroMarca("");
+    setFiltroEstado("");
   }
 
   async function manejarNuevaMarca() {
@@ -147,6 +188,29 @@ export default function MaquinasPage() {
 
   return (
     <div className="maquinas-page">
+      {/* POP UP DE ÉXITO */}
+      {mensajeExito && (
+        <div style={{
+          position: "fixed",
+          bottom: "30px",
+          right: "30px",
+          backgroundColor: "#28a745",
+          color: "white",
+          padding: "16px 24px",
+          borderRadius: "8px",
+          boxShadow: "0 4px 12px rgba(0, 0, 0, 0.15)",
+          zIndex: 9999,
+          display: "flex",
+          alignItems: "center",
+          gap: "12px",
+          fontWeight: "bold",
+          animation: "fade-in-up 0.3s ease-out"
+        }}>
+          <span style={{ fontSize: "1.2rem" }}>✓</span>
+          {mensajeExito}
+        </div>
+      )}
+
       <div className="tick-panel maquinas-form-panel">
         <span className="chart-panel__eyebrow">
           {editandoId ? `Editando máquina #${editandoId}` : "Registrar máquina nueva"}
@@ -227,8 +291,46 @@ export default function MaquinasPage() {
 
       <div className="tick-panel maquinas-list-panel">
         <span className="chart-panel__eyebrow">
-          Máquinas registradas {cargando ? "(cargando…)" : `(${maquinas.length})`}
+          Máquinas registradas {cargando ? "(cargando…)" : `(${maquinasFiltradas.length})`}
         </span>
+
+        {/* BARRA DE BÚSQUEDA USANDO LAS CLASES CSS EXACTAS */}
+        <div className="maquinas-filtros">
+          <input
+            type="text"
+            placeholder="Buscar máquina, descripción, modelo..."
+            value={busqueda}
+            onChange={(e) => setBusqueda(e.target.value)}
+          />
+          
+          <select 
+            value={filtroMarca} 
+            onChange={(e) => setFiltroMarca(e.target.value)}
+          >
+            <option value="">Todas las marcas</option>
+            {marcas.map((m) => (
+              <option key={m.id} value={m.id}>{m.nombre}</option>
+            ))}
+          </select>
+
+          <select 
+            value={filtroEstado} 
+            onChange={(e) => setFiltroEstado(e.target.value)}
+          >
+            <option value="">Todos los estados</option>
+            {ESTADOS.map((estado) => (
+              <option key={estado.codigo} value={estado.codigo}>{estado.label}</option>
+            ))}
+          </select>
+
+          <button 
+            type="button" 
+            onClick={limpiarFiltros} 
+            disabled={!busqueda && !filtroMarca && !filtroEstado}
+          >
+            Limpiar filtros
+          </button>
+        </div>
 
         <table className="maquinas-table">
           <thead>
@@ -266,17 +368,17 @@ export default function MaquinasPage() {
                 </td>
               </tr>
             ))}
-            {maquinas.length === 0 && !cargando && (
+            {maquinasFiltradas.length === 0 && !cargando && (
               <tr>
                 <td colSpan={5} className="maquinas-table__vacio">
-                  No hay máquinas registradas todavía.
+                  No se encontraron máquinas con esos filtros.
                 </td>
               </tr>
             )}
           </tbody>
         </table>
 
-        {maquinas.length > MAQUINAS_POR_PAGINA && (
+        {maquinasFiltradas.length > MAQUINAS_POR_PAGINA && (
           <div className="maquinas-carrusel">
             <button
               type="button"
@@ -298,6 +400,13 @@ export default function MaquinasPage() {
           </div>
         )}
       </div>
+      
+      <style>{`
+        @keyframes fade-in-up {
+          from { opacity: 0; transform: translateY(20px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+      `}</style>
     </div>
   );
 }

@@ -3,6 +3,8 @@ import SourcePanel from "./components/SourcePanel";
 import Readouts from "./components/Readouts";
 import MetricsChart from "./components/MetricsChart";
 import MaquinasPage from "./components/MaquinasPage";
+import RefaccionesPage from "./components/RefaccionesPage";
+import MantenimientosPage from "./components/MantenimientosPage";
 import "./App.css";
 
 const API_BASE = "http://localhost:8080/api/v1/dashboard";
@@ -90,13 +92,57 @@ export default function App() {
         >
           Máquinas
         </button>
+        <button
+          type="button"
+          onClick={() => setVistaApp("refacciones")}
+          style={{
+            padding: "6px 14px",
+            border: `1px solid ${vistaApp === "refacciones" ? "#e85d25" : "#3a4148"}`,
+            background: vistaApp === "refacciones" ? "rgba(232, 93, 37, 0.1)" : "transparent",
+            color: vistaApp === "refacciones" ? "#e85d25" : "#929aa2",
+            cursor: "pointer",
+            fontFamily: "IBM Plex Sans",
+            fontSize: "13px",
+          }}
+        >
+          Refacciones
+        </button>
+        <button
+          type="button"
+          onClick={() => setVistaApp("mantenimientos")}
+          style={{
+            padding: "6px 14px",
+            border: `1px solid ${vistaApp === "mantenimientos" ? "#e85d25" : "#3a4148"}`,
+            background: vistaApp === "mantenimientos" ? "rgba(232, 93, 37, 0.1)" : "transparent",
+            color: vistaApp === "mantenimientos" ? "#e85d25" : "#929aa2",
+            cursor: "pointer",
+            fontFamily: "IBM Plex Sans",
+            fontSize: "13px",
+          }}
+        >
+          Mantenimientos
+        </button>
       </nav>
 
-      {vistaApp === "maquinas" ? (
+      {vistaApp === "maquinas" && (
         <main className="layout" style={{ display: "block", padding: "24px" }}>
           <MaquinasPage />
         </main>
-      ) : (
+      )}
+
+      {vistaApp === "refacciones" && (
+        <main className="layout" style={{ display: "block", padding: "24px" }}>
+          <RefaccionesPage />
+        </main>
+      )}
+
+      {vistaApp === "mantenimientos" && (
+        <main className="layout" style={{ display: "block", padding: "24px" }}>
+          <MantenimientosPage />
+        </main>
+      )}
+
+      {vistaApp === "dashboard" && (
         <main className="layout">
           <section className="layout__side">
             <SourcePanel

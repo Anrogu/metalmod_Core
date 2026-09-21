@@ -1,24 +1,24 @@
-.maquinas-page {
+.refacciones-page {
   display: grid;
   grid-template-columns: 320px 1fr;
   gap: 24px;
   align-items: start;
 }
 
-.maquinas-form-panel {
+.refacciones-form-panel {
   display: flex;
   flex-direction: column;
   gap: 16px;
 }
 
-.maquinas-form {
+.refacciones-form {
   display: flex;
   flex-direction: column;
   gap: 14px;
   margin-top: 12px;
 }
 
-.maquinas-form label {
+.refacciones-form label {
   display: flex;
   flex-direction: column;
   gap: 6px;
@@ -27,8 +27,7 @@
   color: #929aa2;
 }
 
-.maquinas-form input,
-.maquinas-form select {
+.refacciones-form input {
   background: #1e2226;
   border: 1px solid #3a4148;
   color: #edeae3;
@@ -38,38 +37,27 @@
   border-radius: 2px;
 }
 
-.maquinas-form input:focus,
-.maquinas-form select:focus {
+.refacciones-form input:focus {
   outline: none;
   border-color: #e85d25;
 }
 
-.maquinas-form__select-row {
+.refacciones-form__row {
   display: flex;
-  gap: 8px;
+  gap: 12px;
 }
 
-.maquinas-form__select-row select {
+.refacciones-form__row label {
   flex: 1;
 }
 
-.maquinas-form__select-row button {
-  white-space: nowrap;
-  background: transparent;
-  border: 1px solid #3a4148;
-  color: #929aa2;
-  padding: 0 10px;
-  cursor: pointer;
-  font-size: 12px;
-}
-
-.maquinas-form__actions {
+.refacciones-form__actions {
   display: flex;
   gap: 8px;
   margin-top: 4px;
 }
 
-.maquinas-form__submit {
+.refacciones-form__submit {
   background: #e85d25;
   border: none;
   color: #1e2226;
@@ -80,7 +68,7 @@
   font-size: 13px;
 }
 
-.maquinas-form__actions button:not(.maquinas-form__submit) {
+.refacciones-form__actions button:not(.refacciones-form__submit) {
   background: transparent;
   border: 1px solid #3a4148;
   color: #929aa2;
@@ -88,17 +76,17 @@
   cursor: pointer;
 }
 
-.maquinas-form__error {
+.refacciones-form__error {
   color: #e85d25;
   font-size: 12.5px;
   margin: 0;
 }
 
-.maquinas-list-panel {
+.refacciones-list-panel {
   min-height: 300px;
 }
 
-.maquinas-table {
+.refacciones-table {
   width: 100%;
   border-collapse: collapse;
   margin-top: 12px;
@@ -106,7 +94,7 @@
   font-family: "IBM Plex Sans", sans-serif;
 }
 
-.maquinas-table th {
+.refacciones-table th {
   text-align: left;
   padding: 8px;
   border-bottom: 1px solid #3a4148;
@@ -114,13 +102,33 @@
   font-weight: 600;
 }
 
-.maquinas-table td {
+.refacciones-table td {
   padding: 8px;
   border-bottom: 1px solid #2b3035;
   color: #edeae3;
 }
 
-.maquinas-table td button {
+.refacciones-table__fila--bajo td {
+  background: rgba(232, 93, 37, 0.06);
+}
+
+.refacciones-table__badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border: 1px solid #e85d25;
+  color: #e85d25;
+  font-size: 10.5px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.refacciones-table__acciones {
+  display: flex;
+  gap: 6px;
+}
+
+.refacciones-table__acciones button {
   background: transparent;
   border: 1px solid #3a4148;
   color: #929aa2;
@@ -129,34 +137,13 @@
   font-size: 12px;
 }
 
-.maquinas-table__estado {
-  background: #1e2226;
-  border: 1px solid #3a4148;
-  color: #edeae3;
-  padding: 4px 6px;
-  font-size: 12px;
-}
-
-.maquinas-table__estado--activa {
-  border-color: #4caf6f;
-}
-
-.maquinas-table__estado--mantenimiento {
-  border-color: #e85d25;
-}
-
-.maquinas-table__estado--baja {
-  border-color: #6b7178;
-  color: #929aa2;
-}
-
-.maquinas-table__vacio {
+.refacciones-table__vacio {
   text-align: center;
   color: #929aa2;
   padding: 20px;
 }
 
-.maquinas-carrusel {
+.refacciones-carrusel {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -166,7 +153,7 @@
   border-top: 1px solid #3a4148;
 }
 
-.maquinas-carrusel button {
+.refacciones-carrusel button {
   background: transparent;
   border: 1px solid #3a4148;
   color: #929aa2;
@@ -176,40 +163,41 @@
   font-size: 12.5px;
 }
 
-.maquinas-carrusel button:hover:not(:disabled) {
+.refacciones-carrusel button:hover:not(:disabled) {
   border-color: #e85d25;
   color: #e85d25;
 }
 
-.maquinas-carrusel button:disabled {
+.refacciones-carrusel button:disabled {
   opacity: 0.35;
   cursor: default;
 }
 
-.maquinas-carrusel__indicador {
+.refacciones-carrusel__indicador {
   font-family: "IBM Plex Mono", monospace;
   font-size: 12.5px;
   color: #929aa2;
 }
-.maquinas-filtros {
+/* RefaccionesPage.css - Añade esto para la barra de búsqueda */
+.refacciones-filtros {
   display: flex;
   gap: 8px;
   margin: 12px 0 4px;
   flex-wrap: wrap;
 }
 
-.maquinas-filtros select,
-.maquinas-filtros input {
+.refacciones-filtros select,
+.refacciones-filtros input {
   background: #1e2226;
   border: 1px solid #3a4148;
   color: #edeae3;
   padding: 6px 8px;
   font-family: "IBM Plex Sans", sans-serif;
   font-size: 12.5px;
-  min-width: 200px;
+  min-width: 250px; /* Opcional: para que la barra de texto sea más ancha */
 }
 
-.maquinas-filtros button {
+.refacciones-filtros button {
   background: transparent;
   border: 1px solid #3a4148;
   color: #929aa2;
@@ -218,12 +206,12 @@
   font-size: 12.5px;
 }
 
-.maquinas-filtros button:hover:not(:disabled) {
+.refacciones-filtros button:hover:not(:disabled) {
   border-color: #e85d25;
   color: #e85d25;
 }
 
-.maquinas-filtros button:disabled {
+.refacciones-filtros button:disabled {
   opacity: 0.35;
   cursor: default;
 }
