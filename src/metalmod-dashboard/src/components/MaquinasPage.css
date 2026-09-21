@@ -191,3 +191,39 @@
   font-size: 12.5px;
   color: #929aa2;
 }
+.maquinas-filtros {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 4px;
+  flex-wrap: wrap;
+}
+
+.maquinas-filtros select,
+.maquinas-filtros input {
+  background: #1e2226;
+  border: 1px solid #3a4148;
+  color: #edeae3;
+  padding: 6px 8px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+  min-width: 200px;
+}
+
+.maquinas-filtros button {
+  background: transparent;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.maquinas-filtros button:hover:not(:disabled) {
+  border-color: #e85d25;
+  color: #e85d25;
+}
+
+.maquinas-filtros button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
