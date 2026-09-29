@@ -1,0 +1,36 @@
+services:
+  db:
+    image: postgres:18
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 'Mme010$'
+      POSTGRES_DB: metalmod_core
+    ports:
+      - "5433:5432"
+    volumes:
+      # Modificado para PostgreSQL 18+
+      - pgdata:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/respaldo_seguro.sql
+
+  backend:
+    build: ./backend
+    ports:
+      - "8083:8080"
+    environment:
+      - SERVER_PORT=8080
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/metalmod_core
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Mme010$
+      - SPRING_JPA_HIBERNATE_DDL_AUTO=none
+    depends_on:
+      - db
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "8081:80"
+    depends_on:
+      - backend
+
+volumes:
+  pgdata:

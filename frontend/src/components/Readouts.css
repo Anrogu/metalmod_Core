@@ -1,0 +1,135 @@
+.readouts {
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.readouts__eyebrow {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: var(--text-faint);
+  letter-spacing: 0.03em;
+}
+
+.readout {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--line);
+}
+
+.readout:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.readout__label {
+  font-size: 12px;
+  color: var(--text-muted);
+}
+
+.readout__value {
+  font-family: var(--font-display);
+  font-size: 19px;
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.readout__value.is-accent {
+  color: var(--accent);
+}
+@media (max-width: 768px) {
+  /* 1. Convertir la lista vertical en una cuadrícula de 2 columnas */
+  .readouts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 12px;
+    padding: 16px;
+  }
+
+  /* 2. Asegurar que el pequeño título superior ocupe toda la fila */
+  .readouts__eyebrow {
+    grid-column: 1 / -1;
+    margin-bottom: 4px;
+  }
+
+  /* 3. Cambiar el separador inferior por un borde lateral para el formato de cuadrícula */
+  .readout {
+    border-bottom: none;
+    border-left: 2px solid var(--line);
+    padding-bottom: 0;
+    padding-left: 12px;
+  }
+
+  /* 4. Prevenir que los valores largos rompan el diseño en pantallas pequeñas */
+  .readout__value {
+    font-size: 17px; /* Reducción sutil para encajar mejor en 2 columnas */
+    word-break: break-word;
+  }
+}
+/* ==== Agregar esto al final de tu Readouts.css existente ==== */
+
+.readouts__top3-wrap {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #3a4148;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.readouts__top3-titulo {
+  display: block;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 11.5px;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: #929aa2;
+  margin-bottom: 8px;
+}
+
+.readouts__top3-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.readouts__top3-lista li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+}
+
+.readouts__top3-pos {
+  width: 16px;
+  height: 16px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 10px;
+  flex-shrink: 0;
+}
+
+.readouts__top3-nombre {
+  flex: 1;
+  color: #edeae3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.readouts__top3-cantidad {
+  color: #e85d25;
+  font-family: "IBM Plex Mono", monospace;
+  font-weight: 600;
+}
