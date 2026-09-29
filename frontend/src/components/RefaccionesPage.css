@@ -1,0 +1,288 @@
+.refacciones-page {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.refacciones-form-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.refacciones-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.refacciones-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+  color: #929aa2;
+}
+
+.refacciones-form input {
+  background: #1e2226;
+  border: 1px solid #3a4148;
+  color: #edeae3;
+  padding: 8px 10px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+  border-radius: 2px;
+}
+
+.refacciones-form input:focus {
+  outline: none;
+  border-color: #e85d25;
+}
+
+.refacciones-form__row {
+  display: flex;
+  gap: 12px;
+}
+
+.refacciones-form__row label {
+  flex: 1;
+}
+
+.refacciones-form__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.refacciones-form__submit {
+  background: #e85d25;
+  border: none;
+  color: #1e2226;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+}
+
+.refacciones-form__actions button:not(.refacciones-form__submit) {
+  background: transparent;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.refacciones-form__error {
+  color: #e85d25;
+  font-size: 12.5px;
+  margin: 0;
+}
+
+.refacciones-list-panel {
+  min-height: 300px;
+}
+
+.refacciones-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 13px;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.refacciones-table th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #3a4148;
+  color: #929aa2;
+  font-weight: 600;
+}
+
+.refacciones-table td {
+  padding: 8px;
+  border-bottom: 1px solid #2b3035;
+  color: #edeae3;
+}
+
+.refacciones-table__fila--bajo td {
+  background: rgba(232, 93, 37, 0.06);
+}
+
+.refacciones-table__badge {
+  display: inline-block;
+  margin-left: 8px;
+  padding: 1px 6px;
+  border: 1px solid #e85d25;
+  color: #e85d25;
+  font-size: 10.5px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.refacciones-table__acciones {
+  display: flex;
+  gap: 6px;
+}
+
+.refacciones-table__acciones button {
+  background: transparent;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.refacciones-table__vacio {
+  text-align: center;
+  color: #929aa2;
+  padding: 20px;
+}
+
+.refacciones-carrusel {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px solid #3a4148;
+}
+
+.refacciones-carrusel button {
+  background: transparent;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+}
+
+.refacciones-carrusel button:hover:not(:disabled) {
+  border-color: #e85d25;
+  color: #e85d25;
+}
+
+.refacciones-carrusel button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.refacciones-carrusel__indicador {
+  font-family: "IBM Plex Mono", monospace;
+  font-size: 12.5px;
+  color: #929aa2;
+}
+/* RefaccionesPage.css - Añade esto para la barra de búsqueda */
+.refacciones-filtros {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 4px;
+  flex-wrap: wrap;
+}
+
+.refacciones-filtros select,
+.refacciones-filtros input {
+  background: #1e2226;
+  border: 1px solid #3a4148;
+  color: #edeae3;
+  padding: 6px 8px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+  min-width: 250px; /* Opcional: para que la barra de texto sea más ancha */
+}
+
+.refacciones-filtros button {
+  background: transparent;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  padding: 6px 14px;
+  cursor: pointer;
+  font-size: 12.5px;
+}
+
+.refacciones-filtros button:hover:not(:disabled) {
+  border-color: #e85d25;
+  color: #e85d25;
+}
+
+.refacciones-filtros button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+@media (max-width: 768px) {
+  /* 1. Apilar el layout principal */
+  .refacciones-page {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  /* 2. Aumentar áreas táctiles de inputs */
+  .refacciones-form input {
+    padding: 12px 10px;
+  }
+
+  /* 3. Apilar los campos del formulario que estaban uno al lado del otro */
+  .refacciones-form__row {
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  /* 4. Apilar los botones de acción del formulario */
+  .refacciones-form__actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .refacciones-form__actions button {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  /* 5. Apilar filtros y remover el min-width de 250px */
+  .refacciones-filtros {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .refacciones-filtros select,
+  .refacciones-filtros input,
+  .refacciones-filtros button {
+    width: 100%;
+    min-width: auto; /* Anula el min-width: 250px del desktop */
+    padding: 10px 12px;
+  }
+
+  /* 6. Habilitar scroll horizontal en la tabla */
+  .refacciones-list-panel {
+    max-width: 100vw;
+  }
+
+  .refacciones-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  /* Aumentar área táctil en los botones de las celdas */
+  .refacciones-table__acciones button {
+    padding: 8px 12px;
+  }
+
+  /* 7. Ajustar el carrusel para móviles */
+  .refacciones-carrusel {
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .refacciones-carrusel button {
+    padding: 10px 16px;
+    flex-grow: 1;
+  }
+}
