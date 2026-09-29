@@ -84,4 +84,3 @@ Gracias a Docker, levantar el proyecto es un proceso rápido. Sigue estos pasos:
 ### 📄 Licencia
 
 Desarrollado para Metalmod.
-(Añade aquí el tipo de licencia de código abierto si aplica, por ejemplo: Distribuido bajo la licencia MIT. Ver LICENSE para más información).
