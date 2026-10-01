@@ -11,7 +11,7 @@ import {
 } from "../api/maquinasApi";
 import "./MaquinasPage.css";
 
-const FORM_VACIO = { nombre: "", descripcion: "", idMarca: "", idModelo: "" };
+const FORM_VACIO = { nombre: "", descripcion: "", buscadorMarca: "", buscadorModelo: "" };
 const MAQUINAS_POR_PAGINA = 10;
 
 const ESTADOS = [
@@ -36,6 +36,10 @@ export default function MaquinasPage() {
   const [filtroEstado, setFiltroEstado] = useState("");
 
   const [pagina, setPagina] = useState(0);
+
+  // Estados para los menús desplegables
+  const [mostrarListaMarcas, setMostrarListaMarcas] = useState(false);
+  const [mostrarListaModelos, setMostrarListaModelos] = useState(false);
 
   useEffect(() => {
     cargarTodo();
@@ -84,6 +88,14 @@ export default function MaquinasPage() {
     paginaSegura * MAQUINAS_POR_PAGINA + MAQUINAS_POR_PAGINA
   );
 
+  const marcasSugeridas = marcas.filter((m) => 
+    m.nombre.toLowerCase().includes((form.buscadorMarca || "").toLowerCase())
+  );
+  
+  const modelosSugeridos = modelos.filter((m) => 
+    m.nombre.toLowerCase().includes((form.buscadorModelo || "").toLowerCase())
+  );
+
   function actualizarCampo(campo, valor) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
@@ -93,8 +105,8 @@ export default function MaquinasPage() {
     setForm({
       nombre: maquina.nombre,
       descripcion: maquina.descripcion || "",
-      idMarca: maquina.idMarca || "",
-      idModelo: maquina.idModelo || "",
+      buscadorMarca: maquina.nombreMarca || "",
+      buscadorModelo: maquina.nombreModelo || "",
     });
   }
 
@@ -115,11 +127,24 @@ export default function MaquinasPage() {
     setError("");
     setMensajeExito("");
 
+    const marcaSeleccionada = marcas.find((m) => m.nombre === form.buscadorMarca);
+    const modeloSeleccionado = modelos.find((m) => m.nombre === form.buscadorModelo);
+
+    if (form.buscadorMarca && !marcaSeleccionada) {
+      setError("La marca escrita no existe. Déjala en blanco o elige una válida.");
+      return;
+    }
+
+    if (form.buscadorModelo && !modeloSeleccionado) {
+      setError("El modelo escrito no existe. Déjalo en blanco o elige uno válido.");
+      return;
+    }
+
     const payload = {
       nombre: form.nombre.trim(),
       descripcion: form.descripcion.trim() || null,
-      idMarca: form.idMarca ? Number(form.idMarca) : null,
-      idModelo: form.idModelo ? Number(form.idModelo) : null,
+      idMarca: marcaSeleccionada ? marcaSeleccionada.id : null,
+      idModelo: modeloSeleccionado ? modeloSeleccionado.id : null,
     };
 
     try {
@@ -168,7 +193,7 @@ export default function MaquinasPage() {
     try {
       const marca = await crearMarca(nombre.trim());
       setMarcas((prev) => [...prev, marca]);
-      setForm((prev) => ({ ...prev, idMarca: marca.id }));
+      setForm((prev) => ({ ...prev, buscadorMarca: marca.nombre }));
     } catch (err) {
       setError(err.message);
     }
@@ -180,7 +205,7 @@ export default function MaquinasPage() {
     try {
       const modelo = await crearModelo(nombre.trim());
       setModelos((prev) => [...prev, modelo]);
-      setForm((prev) => ({ ...prev, idModelo: modelo.id }));
+      setForm((prev) => ({ ...prev, buscadorModelo: modelo.nombre }));
     } catch (err) {
       setError(err.message);
     }
@@ -188,7 +213,6 @@ export default function MaquinasPage() {
 
   return (
     <div className="maquinas-page">
-      {/* POP UP DE ÉXITO */}
       {mensajeExito && (
         <div style={{
           position: "fixed",
@@ -241,17 +265,36 @@ export default function MaquinasPage() {
           <label>
             Marca
             <div className="maquinas-form__select-row">
-              <select
-                value={form.idMarca}
-                onChange={(e) => actualizarCampo("idMarca", e.target.value)}
-              >
-                <option value="">Sin marca</option>
-                {marcas.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nombre}
-                  </option>
-                ))}
-              </select>
+              <div className="maquinas-autocomplete">
+                <input
+                  type="text"
+                  value={form.buscadorMarca}
+                  onChange={(e) => {
+                    actualizarCampo("buscadorMarca", e.target.value);
+                    setMostrarListaMarcas(true);
+                  }}
+                  onFocus={() => setMostrarListaMarcas(true)}
+                  onBlur={() => setTimeout(() => setMostrarListaMarcas(false), 200)}
+                  placeholder="Buscar o seleccionar marca..."
+                  autoComplete="off"
+                />
+                {mostrarListaMarcas && marcasSugeridas.length > 0 && (
+                  <ul className="maquinas-autocomplete-list">
+                    {marcasSugeridas.map((m) => (
+                      <li
+                        key={m.id}
+                        className="maquinas-autocomplete-item"
+                        onClick={() => {
+                          actualizarCampo("buscadorMarca", m.nombre);
+                          setMostrarListaMarcas(false);
+                        }}
+                      >
+                        {m.nombre}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               <button type="button" onClick={manejarNuevaMarca}>+ nueva</button>
             </div>
           </label>
@@ -259,17 +302,36 @@ export default function MaquinasPage() {
           <label>
             Modelo
             <div className="maquinas-form__select-row">
-              <select
-                value={form.idModelo}
-                onChange={(e) => actualizarCampo("idModelo", e.target.value)}
-              >
-                <option value="">Sin modelo</option>
-                {modelos.map((m) => (
-                  <option key={m.id} value={m.id}>
-                    {m.nombre}
-                  </option>
-                ))}
-              </select>
+              <div className="maquinas-autocomplete">
+                <input
+                  type="text"
+                  value={form.buscadorModelo}
+                  onChange={(e) => {
+                    actualizarCampo("buscadorModelo", e.target.value);
+                    setMostrarListaModelos(true);
+                  }}
+                  onFocus={() => setMostrarListaModelos(true)}
+                  onBlur={() => setTimeout(() => setMostrarListaModelos(false), 200)}
+                  placeholder="Buscar o seleccionar modelo..."
+                  autoComplete="off"
+                />
+                {mostrarListaModelos && modelosSugeridos.length > 0 && (
+                  <ul className="maquinas-autocomplete-list">
+                    {modelosSugeridos.map((m) => (
+                      <li
+                        key={m.id}
+                        className="maquinas-autocomplete-item"
+                        onClick={() => {
+                          actualizarCampo("buscadorModelo", m.nombre);
+                          setMostrarListaModelos(false);
+                        }}
+                      >
+                        {m.nombre}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
               <button type="button" onClick={manejarNuevoModelo}>+ nuevo</button>
             </div>
           </label>
@@ -294,7 +356,6 @@ export default function MaquinasPage() {
           Máquinas registradas {cargando ? "(cargando…)" : `(${maquinasFiltradas.length})`}
         </span>
 
-        {/* BARRA DE BÚSQUEDA USANDO LAS CLASES CSS EXACTAS */}
         <div className="maquinas-filtros">
           <input
             type="text"

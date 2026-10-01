@@ -24,8 +24,24 @@ const FORM_VACIO = {
   minutos: "0",
 };
 
-// El tipo de mantenimiento con este id no lleva refaccion/costo/proveedor/solucion
-const TIPO_ID_SIN_DETALLE = 4;
+// IDs para controlar el comportamiento del formulario según el tipo de mantenimiento
+const ID_LIMPIEZA = 4;
+const ID_RECORRIDO = 5;
+
+// Listas de opciones predefinidas
+const TAREAS_LIMPIEZA = [
+  "Cambio de Solubles",
+  "Limpieza de Tanques",
+  "Lavado de Boquillas",
+  "Retiro de rebaba o escoria"
+];
+
+const TAREAS_RECORRIDO = [
+  "Revision de escurrimientos",
+  "Revisión de fugas",
+  "Ajuste de cables",
+  "Verificación de ruidos o vibraciones anómalas"
+];
 
 const POR_PAGINA = 10;
 
@@ -121,7 +137,17 @@ export default function MantenimientosPage() {
     r.nombre.toLowerCase().includes(form.buscadorRefaccion.toLowerCase())
   );
 
-  const esTipoSinDetalle = Number(form.idTipoMantenimiento) === TIPO_ID_SIN_DETALLE;
+  // Lógica para renderizado condicional del formulario
+  const esLimpieza = Number(form.idTipoMantenimiento) === ID_LIMPIEZA;
+  const esRecorrido = Number(form.idTipoMantenimiento) === ID_RECORRIDO;
+  
+  // Si es limpieza O recorrido, ocultamos los campos de detalle y mostramos el select de tareas
+  const esTipoSinDetalle = esLimpieza || esRecorrido;
+  const mostrarSelectFalla = esLimpieza || esRecorrido;
+
+  let opcionesFalla = [];
+  if (esLimpieza) opcionesFalla = TAREAS_LIMPIEZA;
+  if (esRecorrido) opcionesFalla = TAREAS_RECORRIDO;
 
   function actualizarCampo(campo, valor) {
     setForm((prev) => ({ ...prev, [campo]: valor }));
@@ -271,7 +297,10 @@ export default function MantenimientosPage() {
             Tipo de mantenimiento
             <select
               value={form.idTipoMantenimiento}
-              onChange={(e) => actualizarCampo("idTipoMantenimiento", e.target.value)}
+              onChange={(e) => {
+                actualizarCampo("idTipoMantenimiento", e.target.value);
+                actualizarCampo("falla", ""); // Limpia el campo de falla/tarea al cambiar de tipo
+              }}
               required
             >
               <option value="">Selecciona un tipo</option>
@@ -294,14 +323,30 @@ export default function MantenimientosPage() {
           </label>
 
           <label>
-            Falla
-            <input
-              type="text"
-              value={form.falla}
-              onChange={(e) => actualizarCampo("falla", e.target.value)}
-              required
-              maxLength={255}
-            />
+            {mostrarSelectFalla ? "Tarea realizada" : "Falla"}
+            {mostrarSelectFalla ? (
+              <select
+                value={form.falla}
+                onChange={(e) => actualizarCampo("falla", e.target.value)}
+                required
+              >
+                <option value="">Selecciona la tarea...</option>
+                {opcionesFalla.map((opcion, index) => (
+                  <option key={index} value={opcion}>
+                    {opcion}
+                  </option>
+                ))}
+              </select>
+            ) : (
+              <input
+                type="text"
+                value={form.falla}
+                onChange={(e) => actualizarCampo("falla", e.target.value)}
+                required
+                maxLength={255}
+                placeholder="Describe la falla presentada..."
+              />
+            )}
           </label>
 
           {!esTipoSinDetalle && (
@@ -465,7 +510,7 @@ export default function MantenimientosPage() {
               <th>Máquina</th>
               <th>Tipo</th>
               <th>Fecha</th>
-              <th>Falla</th>
+              <th>Falla / Tarea</th>
               <th>Proveedor</th>
               <th>Técnico</th>
               <th>Tiempo</th>
@@ -477,7 +522,7 @@ export default function MantenimientosPage() {
             {ticketsPagina.map((t) => (
               <tr key={t.id}>
                 <td>{t.nombreMaquina}</td>
-                <td>{t.nombreTipoMantenimiento || t.tipoMantenimiento || "—"}</td>
+                <td>{t.nombreTipoMantenimiento || "—"}</td>
                 <td>{t.fecha}</td>
                 <td>{t.falla}</td>
                 <td>{t.proveedor || "—"}</td>

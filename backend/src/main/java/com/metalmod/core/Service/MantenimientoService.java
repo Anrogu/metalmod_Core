@@ -73,11 +73,12 @@ public class MantenimientoService {
         List<Mantenimiento> registros;
 
         if (idMaquina != null) {
-            registros = mantenimientoRepository.findByIdMaquina_Id(idMaquina);
+            registros = mantenimientoRepository.findByIdMaquina_IdOrderByIdDesc(idMaquina);
         } else if (desde != null && hasta != null) {
-            registros = mantenimientoRepository.findByFechaBetween(desde, hasta);
+            registros = mantenimientoRepository.findByFechaBetweenOrderByFechaDesc(desde, hasta);
         } else {
-            registros = mantenimientoRepository.findAll();
+            // Cambiamos el findAll() genérico por el ordenado
+            registros = mantenimientoRepository.findAllByOrderByIdDesc();
         }
 
         return registros.stream().map(mantenimientoMapper::toResponse).toList();
