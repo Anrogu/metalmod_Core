@@ -292,3 +292,59 @@
     flex-grow: 1;
   }
 }
+/* --- ESTILOS PARA EL AUTOCOMPLETADO PERSONALIZADO EN MÁQUINAS --- */
+.maquinas-autocomplete {
+  position: relative;
+  flex-grow: 1; /* Permite que el input ocupe todo el espacio disponible al lado del botón */
+}
+
+.maquinas-autocomplete input {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.maquinas-autocomplete-list {
+  position: absolute;
+  top: 100%; 
+  left: 0;
+  width: 100%;
+  background: #1e2226;
+  border: 1px solid #e85d25;
+  border-top: none;
+  z-index: 100;
+  max-height: 180px;
+  overflow-y: auto;
+  border-radius: 0 0 2px 2px;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.maquinas-autocomplete-list::-webkit-scrollbar {
+  width: 6px;
+}
+
+.maquinas-autocomplete-list::-webkit-scrollbar-thumb {
+  background: #3a4148;
+  border-radius: 4px;
+}
+
+.maquinas-autocomplete-item {
+  padding: 8px 10px;
+  color: #edeae3;
+  font-size: 13px;
+  cursor: pointer;
+  border-bottom: 1px solid #2b3035;
+  font-family: "IBM Plex Sans", sans-serif;
+  transition: background 0.1s ease, color 0.1s ease;
+}
+
+.maquinas-autocomplete-item:last-child {
+  border-bottom: none;
+}
+
+.maquinas-autocomplete-item:hover {
+  background: #2b3035;
+  color: #e85d25;
+}
