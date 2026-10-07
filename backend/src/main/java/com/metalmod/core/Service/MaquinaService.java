@@ -12,8 +12,11 @@ import com.metalmod.core.Repository.MaquinaRepository;
 import com.metalmod.core.Repository.MarcaRepository;
 import com.metalmod.core.Repository.ModeloRepository;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -42,12 +45,14 @@ public class MaquinaService {
 
     @Transactional
     public MaquinaResponseDto crear(MaquinaRequestDto request) {
+        validarNombreDisponible(request.nombre(), null);
+
         Maquina maquina = maquinaMapper.toEntity(request);
         maquina.setIdMarca(resolverMarca(request.idMarca()));
         maquina.setIdModelo(resolverModelo(request.idModelo()));
         maquina.setIdEstado(estadoPorCodigo(CODIGO_ESTADO_INICIAL));
 
-        return maquinaMapper.toResponse(maquinaRepository.save(maquina));
+        return guardar(maquina);
     }
 
     public MaquinaResponseDto obtenerPorId(Long id) {
@@ -65,11 +70,13 @@ public class MaquinaService {
     @Transactional
     public MaquinaResponseDto actualizar(Long id, MaquinaRequestDto request) {
         Maquina maquina = buscarOLanzar(id);
+        validarNombreDisponible(request.nombre(), id);
+
         maquinaMapper.aplicarDatos(maquina, request);
         maquina.setIdMarca(resolverMarca(request.idMarca()));
         maquina.setIdModelo(resolverModelo(request.idModelo()));
 
-        return maquinaMapper.toResponse(maquinaRepository.save(maquina));
+        return guardar(maquina);
     }
 
     @Transactional
@@ -77,6 +84,37 @@ public class MaquinaService {
         Maquina maquina = buscarOLanzar(id);
         maquina.setIdEstado(estadoPorCodigo(codigoEstado));
         return maquinaMapper.toResponse(maquinaRepository.save(maquina));
+    }
+
+    /**
+     * Verifica que no exista otra máquina con el mismo nombre (sin distinguir
+     * mayúsculas ni espacios en los extremos). Si idExistente no es null,
+     * se excluye esa máquina de la comparación (caso de edición).
+     */
+    private void validarNombreDisponible(String nombre, Long idExistente) {
+        String nombreLimpio = nombre == null ? "" : nombre.trim();
+
+        boolean duplicado = (idExistente == null)
+                ? maquinaRepository.existsByNombreIgnoreCase(nombreLimpio)
+                : maquinaRepository.existsByNombreIgnoreCaseAndIdNot(nombreLimpio, idExistente);
+
+        if (duplicado) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Ya existe una máquina con el nombre \"" + nombreLimpio + "\".");
+        }
+    }
+
+    /**
+     * Guarda y traduce la violación del índice único (respaldo ante dos
+     * peticiones simultáneas) al mismo 409 que la validación previa.
+     */
+    private MaquinaResponseDto guardar(Maquina maquina) {
+        try {
+            return maquinaMapper.toResponse(maquinaRepository.saveAndFlush(maquina));
+        } catch (DataIntegrityViolationException e) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT,
+                    "Ya existe una máquina con el nombre \"" + maquina.getNombre() + "\".");
+        }
     }
 
     private Marca resolverMarca(Long idMarca) {
@@ -100,4 +138,4 @@ public class MaquinaService {
         return maquinaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("La maquina con id " + id + " no existe."));
     }
-}   
+}

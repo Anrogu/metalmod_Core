@@ -15,8 +15,6 @@ const FORM_VACIO = {
   fecha: "",
   falla: "",
   solucion: "",
-  proveedor: "",
-  costo: "",
   buscadorRefaccion: "", 
   idTecnico: "",
   idTipoMantenimiento: "",
@@ -117,8 +115,7 @@ export default function MantenimientosPage() {
     return (
       (t.nombreMaquina && t.nombreMaquina.toLowerCase().includes(termino)) ||
       (t.falla && t.falla.toLowerCase().includes(termino)) ||
-      (nombreTec.toLowerCase().includes(termino)) ||
-      (t.proveedor && t.proveedor.toLowerCase().includes(termino))
+      (nombreTec.toLowerCase().includes(termino))
     );
   });
 
@@ -185,8 +182,6 @@ export default function MantenimientosPage() {
       fecha: form.fecha,
       falla: form.falla.trim(),
       solucion: esTipoSinDetalle ? null : (form.solucion.trim() || null),
-      proveedor: esTipoSinDetalle ? null : (form.proveedor.trim() || null),
-      costo: esTipoSinDetalle ? null : (form.costo ? Number(form.costo) : null),
       idRefaccion: esTipoSinDetalle ? null : (refaccionSeleccionada ? refaccionSeleccionada.id : null),
       idTecnico: form.idTecnico ? Number(form.idTecnico) : null, 
       tipoMantenimiento: form.idTipoMantenimiento ? Number(form.idTipoMantenimiento) : null,
@@ -357,21 +352,11 @@ export default function MantenimientosPage() {
                 value={form.solucion}
                 onChange={(e) => actualizarCampo("solucion", e.target.value)}
                 maxLength={255}
+                placeholder="Describe la Solucion presentada..."
               />
             </label>
           )}
 
-          {!esTipoSinDetalle && (
-            <label>
-              Proveedor
-              <input
-                type="text"
-                value={form.proveedor}
-                onChange={(e) => actualizarCampo("proveedor", e.target.value)}
-                maxLength={150}
-              />
-            </label>
-          )}
 
           <label>
             Técnico
@@ -389,18 +374,6 @@ export default function MantenimientosPage() {
             </select>
           </label>
 
-          {!esTipoSinDetalle && (
-            <label>
-              Costo
-              <input
-                type="number"
-                min="0"
-                step="0.01"
-                value={form.costo}
-                onChange={(e) => actualizarCampo("costo", e.target.value)}
-              />
-            </label>
-          )}
 
           {!esTipoSinDetalle && (
             <label className="mant-autocomplete">
@@ -511,10 +484,8 @@ export default function MantenimientosPage() {
               <th>Tipo</th>
               <th>Fecha</th>
               <th>Falla / Tarea</th>
-              <th>Proveedor</th>
               <th>Técnico</th>
               <th>Tiempo</th>
-              <th>Costo</th>
               <th></th>
             </tr>
           </thead>
@@ -525,10 +496,8 @@ export default function MantenimientosPage() {
                 <td>{t.nombreTipoMantenimiento || "—"}</td>
                 <td>{t.fecha}</td>
                 <td>{t.falla}</td>
-                <td>{t.proveedor || "—"}</td>
                 <td>{t.nombreTecnico || t.tecnico || "—"}</td>
                 <td>{formatearTiempo(t.tiempoInvertidoMinutos)}</td>
-                <td>{t.costo != null ? `$${t.costo}` : "—"}</td>
                 <td>
                   <button type="button" onClick={() => manejarEliminar(t.id)}>
                     Eliminar

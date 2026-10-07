@@ -3,9 +3,7 @@ package com.metalmod.core.Service;
 import com.metalmod.core.Dto.DashboardStatsResponseDto;
 import com.metalmod.core.Dto.DashboardStatsResponseDto.ConteoDto;
 import com.metalmod.core.Dto.MantenimientoDashboardRecordDto;
-import com.metalmod.core.Entity.Mantenimiento;
-import com.metalmod.core.Entity.Marca;
-import com.metalmod.core.Entity.Refaccion;
+import com.metalmod.core.Entity.*;
 import com.metalmod.core.Repository.MantenimientoRepository;
 import com.metalmod.core.Repository.MantenimientoRepository.ConteoPorNombre;
 import org.springframework.data.domain.PageRequest;
@@ -53,15 +51,16 @@ public class DashboardDbService {
     private MantenimientoDashboardRecordDto aRegistroDashboard(Mantenimiento m) {
         Refaccion refaccion = m.getIdRefaccion();
         Marca marca = m.getIdMaquina().getIdMarca();
-        // Obtener el técnico de la entidad Mantenimiento (ajusta el nombre del método si es distinto)
-        com.metalmod.core.Entity.Tecnico tecnico = m.getTecnico();
+        Tecnico tecnico = m.getTecnico();
+        TipoMantenimiento tipoMantenimiento = m.getTipoMantenimiento();
 
         return new MantenimientoDashboardRecordDto(
                 m.getIdMaquina().getNombre(),
                 marca != null ? marca.getNombre() : null,
                 refaccion != null ? refaccion.getNombre() : null,
-                tecnico != null ? tecnico.getNombre() : null, // <-- NUEVO VALOR MAPEDO AQUÍ
-                calcularTrimestre(m.getFecha())
+                calcularTrimestre(m.getFecha()),
+                tecnico != null ? tecnico.getNombre() : null,
+                tipoMantenimiento != null ? tipoMantenimiento.getNombre() : null
         );
     }
 

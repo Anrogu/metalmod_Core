@@ -129,7 +129,18 @@ export default function MaquinasPage() {
 
     const marcaSeleccionada = marcas.find((m) => m.nombre === form.buscadorMarca);
     const modeloSeleccionado = modelos.find((m) => m.nombre === form.buscadorModelo);
+    const nombreNormalizado = form.nombre.trim().toLowerCase();
 
+    const nombreDuplicado = maquinas.some(
+  (m) =>
+    m.nombre.trim().toLowerCase() === nombreNormalizado &&
+    m.id !== editandoId // al editar, no se compara contra sí misma
+);
+
+if (nombreDuplicado) {
+  setError(`Ya existe una máquina llamada "${form.nombre.trim()}".`);
+  return;
+}
     if (form.buscadorMarca && !marcaSeleccionada) {
       setError("La marca escrita no existe. Déjala en blanco o elige una válida.");
       return;

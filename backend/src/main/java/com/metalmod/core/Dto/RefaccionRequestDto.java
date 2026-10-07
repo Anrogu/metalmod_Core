@@ -17,6 +17,8 @@ public record RefaccionRequestDto(
         Integer cantidadStock, // si viene nulo, el service asume 0
 
         @PositiveOrZero
-        Integer stockMinimo    // si viene nulo, el service asume 0
+        Integer stockMinimo,    // si viene nulo, el service asume 0
+        @Size(max = 30)
+        String codigo
 ) {
 }

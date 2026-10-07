@@ -10,4 +10,6 @@ import java.util.List;
 public interface MaquinaRepository extends JpaRepository<Maquina, Long> {
 
     List<Maquina> findByNombreContainingIgnoreCase(String nombre);
+    boolean existsByNombreIgnoreCase(String nombre);
+    boolean existsByNombreIgnoreCaseAndIdNot(String nombre, Long id);
 }

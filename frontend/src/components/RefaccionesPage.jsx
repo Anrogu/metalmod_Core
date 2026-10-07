@@ -7,7 +7,7 @@ import {
 } from "../api/refaccionesApi";
 import "./RefaccionesPage.css";
 
-const FORM_VACIO = { nombre: "", descripcion: "", cantidadStock: "0", stockMinimo: "0" };
+const FORM_VACIO = { codigo: "", nombre: "", descripcion: "", cantidadStock: "0", stockMinimo: "0" };
 const POR_PAGINA = 10;
 
 export default function RefaccionesPage() {
@@ -45,11 +45,11 @@ export default function RefaccionesPage() {
   }
 
   const refaccionesFiltradas = refacciones.filter((r) => {
-    const coincideTexto = !busqueda || (
-      (r.nombre && r.nombre.toLowerCase().includes(busqueda.toLowerCase())) ||
-      (r.descripcion && r.descripcion.toLowerCase().includes(busqueda.toLowerCase()))
-    );
-
+const coincideTexto = !busqueda || (
+  (r.codigo && r.codigo.toLowerCase().includes(busqueda.toLowerCase())) ||
+  (r.nombre && r.nombre.toLowerCase().includes(busqueda.toLowerCase())) ||
+  (r.descripcion && r.descripcion.toLowerCase().includes(busqueda.toLowerCase()))
+);
     const esStockBajo = r.stockBajo || (Number(r.cantidadStock) <= Number(r.stockMinimo));
     const coincideStock = !filtroStock || 
       (filtroStock === "bajo" ? esStockBajo : !esStockBajo);
@@ -68,16 +68,16 @@ export default function RefaccionesPage() {
     setForm((prev) => ({ ...prev, [campo]: valor }));
   }
 
-  function iniciarEdicion(refaccion) {
-    setEditandoId(refaccion.id);
-    setForm({
-      nombre: refaccion.nombre,
-      descripcion: refaccion.descripcion || "",
-      cantidadStock: String(refaccion.cantidadStock ?? 0),
-      stockMinimo: String(refaccion.stockMinimo ?? 0),
-    });
-  }
-
+ function iniciarEdicion(refaccion) {
+  setEditandoId(refaccion.id);
+  setForm({
+    codigo: refaccion.codigo || "",
+    nombre: refaccion.nombre,
+    descripcion: refaccion.descripcion || "",
+    cantidadStock: String(refaccion.cantidadStock ?? 0),
+    stockMinimo: String(refaccion.stockMinimo ?? 0),
+  });
+}
   function cancelarEdicion() {
     setEditandoId(null);
     setForm(FORM_VACIO);
@@ -94,13 +94,23 @@ export default function RefaccionesPage() {
     e.preventDefault();
     setError("");
     setMensajeExito("");
-
+const codigoLimpio = form.codigo.trim().toLowerCase();
+if (codigoLimpio) {
+  const duplicado = refacciones.some(
+    (r) => r.codigo?.trim().toLowerCase() === codigoLimpio && r.id !== editandoId
+  );
+  if (duplicado) {
+    setError(`Ya existe una refacción con el código "${form.codigo.trim()}".`);
+    return;
+  }
+}
     const payload = {
-      nombre: form.nombre.trim(),
-      descripcion: form.descripcion.trim() || null,
-      cantidadStock: Number(form.cantidadStock) || 0,
-      stockMinimo: Number(form.stockMinimo) || 0,
-    };
+  codigo: form.codigo.trim() || null,
+  nombre: form.nombre.trim(),
+  descripcion: form.descripcion.trim() || null,
+  cantidadStock: Number(form.cantidadStock) || 0,
+  stockMinimo: Number(form.stockMinimo) || 0,
+};
 
     try {
       if (editandoId) {
@@ -172,6 +182,16 @@ export default function RefaccionesPage() {
         </span>
 
         <form className="refacciones-form" onSubmit={manejarSubmit}>
+        <label>
+  	 Código
+  		<input
+    		type="text"
+    		value={form.codigo}
+    		onChange={(e) => actualizarCampo("codigo", e.target.value)}
+    		maxLength={50}
+    		placeholder="Ej. REF-0001 (opcional)"
+  		/>
+</label>
           <label>
             Nombre
             <input
@@ -266,18 +286,22 @@ export default function RefaccionesPage() {
 
         <table className="refacciones-table">
           <thead>
-            <tr>
-              <th>Nombre</th>
-              <th>Descripción</th>
-              <th>Stock</th>
-              <th>Mínimo</th>
-              <th></th>
-            </tr>
-          </thead>
+  <tr>
+    <th>Código</th>
+    <th>Nombre</th>
+    <th>Descripción</th>
+    <th>Stock</th>
+    <th>Mínimo</th>
+    <th></th>
+  </tr>
+</thead>
           <tbody>
             {refaccionesPagina.map((r) => (
-              <tr key={r.id} className={r.stockBajo ? "refacciones-table__fila--bajo" : ""}>
-                <td>{r.nombre}</td>
+<tr key={r.id} className={r.stockBajo ? "refacciones-table__fila--bajo" : ""}>
+  <td style={{ fontFamily: "IBM Plex Mono, monospace", whiteSpace: "nowrap" }}>
+    {r.codigo || "—"}
+  </td>
+  <td>{r.nombre}</td>
                 <td style={{ wordBreak: 'break-word', maxWidth: '200px' }}>{r.descripcion || "—"}</td>
                 <td>
                   {r.cantidadStock}
@@ -296,7 +320,7 @@ export default function RefaccionesPage() {
             ))}
             {refaccionesFiltradas.length === 0 && !cargando && (
               <tr>
-                <td colSpan={5} className="refacciones-table__vacio">
+                <td colSpan={6} className="refacciones-table__vacio">
                   No se encontraron refacciones con esos filtros.
                 </td>
               </tr>

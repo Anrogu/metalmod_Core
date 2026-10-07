@@ -36,5 +36,8 @@ public class Refaccion {
     @Column(name = "stock_minimo", nullable = false)
     private Integer stockMinimo;
 
+    @Column(name = "codigo", nullable = false, length = 150)
+    private String codigo;
+
 
 }
