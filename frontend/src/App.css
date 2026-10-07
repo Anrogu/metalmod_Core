@@ -79,6 +79,28 @@
   }
 }
 
+/* --- CLASES NUEVAS DE NAVEGACIÓN --- */
+.app-nav {
+  display: flex;
+  gap: 8px;
+  padding: 16px 32px 0; /* Coincide con el padding de layout */
+  flex-wrap: wrap;
+  max-width: 1400px;
+  width: 100%;
+  margin: 0 auto;
+  box-sizing: border-box;
+}
+
+.app-nav__btn {
+  padding: 6px 14px;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+  border-radius: 2px;
+  box-sizing: border-box;
+  /* Los colores dinámicos siguen en el style inline de App.js */
+}
+
 .layout {
   flex: 1;
   display: grid;
@@ -89,6 +111,11 @@
   width: 100%;
   margin: 0 auto;
   align-items: start;
+  box-sizing: border-box;
+}
+
+.layout--page {
+  display: block !important; /* Evita que las páginas completas usen el grid de 320px */
 }
 
 .layout__side {
@@ -103,15 +130,42 @@
   min-height: 520px;
 }
 
+/* --- RESPONSIVIDAD MEJORADA --- */
 @media (max-width: 860px) {
   .layout {
     grid-template-columns: 1fr;
     padding: 20px 16px 32px;
   }
+  
   .layout__side {
     position: static;
   }
+
+  /* Ajuste de Topbar para evitar colisiones en pantallas muy angostas */
   .topbar {
-    padding: 16px 18px;
+    padding: 16px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 12px;
+  }
+  
+  .topbar__status {
+    width: 100%;
+  }
+
+  /* Ajuste de navegación para que sea amigable con los dedos */
+  .app-nav {
+    padding: 16px 16px 0;
+  }
+  
+  .app-nav__btn {
+    flex-grow: 1; /* Los botones crecen para ocupar todo el ancho disponible */
+    text-align: center;
+    padding: 12px 10px;
+    font-size: 14px;
+  }
+  
+  .layout--page {
+    padding: 16px 0 !important; /* Las páginas internas ya tienen su propio padding, esto evita doble espaciado */
   }
 }

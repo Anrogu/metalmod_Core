@@ -49,6 +49,7 @@ const TRIMESTRES = ["Todos", "Q1", "Q2", "Q3", "Q4"];
 const SIN_TIPO = "Sin tipo";
 const COLORES_TIPO = ["#e85d25", "#4f9fd6", "#6bbf7a", "#d9b84a", "#a77bd1", "#d96a8f"];
 
+// Recharts requiere estos estilos como objetos
 const TOOLTIP_STYLE = {
   background: "#2b3035",
   border: "1px solid #3a4148",
@@ -56,7 +57,6 @@ const TOOLTIP_STYLE = {
   fontFamily: "IBM Plex Sans",
   fontSize: 12.5,
 };
-
 const TICK_NUM = { fill: "#929aa2", fontSize: 12, fontFamily: "IBM Plex Mono" };
 const TICK_TXT = { fill: "#929aa2", fontSize: 12, fontFamily: "IBM Plex Sans" };
 
@@ -67,7 +67,6 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
   const config = VISTAS[vista];
   const esTecnicos = vista === "tecnicos";
 
-  // Tipos de mantenimiento presentes en los datos (para botones y colores estables)
   const tiposDisponibles = useMemo(() => {
     const set = new Set(refacciones.map(tipoDe));
     return Array.from(set).sort();
@@ -81,7 +80,6 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
     return mapa;
   }, [tiposDisponibles]);
 
-  // 1. Filtro por trimestre (todas las vistas) y por tipo (solo técnicos)
   const refaccionesFiltradas = useMemo(() => {
     return refacciones.filter((r) => {
       const okTrim = filtroTrimestre === "Todos" || r.trimestre === filtroTrimestre;
@@ -90,26 +88,21 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
     });
   }, [refacciones, filtroTrimestre, filtroTipo, esTecnicos]);
 
-  // 2. Agrupación simple (máquinas, marca, refacciones)
   const datosCompletos = useMemo(
     () => agruparDatos(refaccionesFiltradas, config.campo),
     [refaccionesFiltradas, config.campo]
   );
-
   const datosTop10 = useMemo(() => datosCompletos.slice(0, 10).reverse(), [datosCompletos]);
 
-  // 3. Agrupación de técnicos por tipo (barras apiladas y tabla)
   const tecnicosPorTipo = useMemo(
     () => agruparPorTecnicoYTipo(refaccionesFiltradas),
     [refaccionesFiltradas]
   );
-
   const tecnicosTop10 = useMemo(
     () => tecnicosPorTipo.filas.slice(0, 10).reverse(),
     [tecnicosPorTipo]
   );
 
-  // 4. Tabla fija de refacciones
   const todasLasRefacciones = useMemo(
     () => agruparDatos(refaccionesFiltradas, "refaccion"),
     [refaccionesFiltradas]
@@ -138,8 +131,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
           ))}
         </div>
 
-        {/* Filtro por trimestre */}
-        <div style={{ marginTop: "16px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+        <div className="chart-panel__filters">
           {TRIMESTRES.map((trim) => (
             <BotonFiltro
               key={trim}
@@ -151,9 +143,8 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
           ))}
         </div>
 
-        {/* Filtro por tipo de mantenimiento (solo en Técnicos) */}
         {esTecnicos && (
-          <div style={{ marginTop: "8px", display: "flex", gap: "8px", flexWrap: "wrap" }}>
+          <div className="chart-panel__filters chart-panel__filters--secondary">
             {["Todos", ...tiposDisponibles].map((tipo) => (
               <BotonFiltro
                 key={tipo}
@@ -180,9 +171,9 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
         )}
 
         {estado === "ready" && refaccionesFiltradas.length > 0 && (
-          <div style={{ display: "flex", flexDirection: "column", width: "100%" }}>
+          <div className="chart-panel__content">
             {/* SECCIÓN 1: GRÁFICA */}
-            <div style={{ width: "100%", height: "440px" }}>
+            <div className="chart-panel__chart-wrapper">
               {vista === "maquinas" && datosTop10.length > 0 && (
                 <ResponsiveContainer width="100%" height="100%">
                   <ScatterChart margin={{ top: 16, right: 24, left: 8, bottom: 8 }}>
@@ -261,7 +252,6 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
                 </ResponsiveContainer>
               )}
 
-              {/* Técnicos: barras apiladas por tipo de mantenimiento */}
               {esTecnicos && tecnicosTop10.length > 0 && (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
@@ -310,29 +300,12 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
             </div>
 
             {/* SECCIÓN 2: TABLAS */}
-            <div
-              style={{
-                display: "grid",
-                gridTemplateColumns: "1fr 1fr",
-                gap: "24px",
-                marginTop: "40px",
-                borderTop: "1px solid #3a4148",
-                paddingTop: "24px",
-              }}
-            >
-              {/* TABLA 1: dinámica */}
+            <div className="chart-panel__tables-wrapper">
               <div>
-                <h4
-                  style={{
-                    color: "#edeae3",
-                    marginBottom: "16px",
-                    fontFamily: "IBM Plex Sans",
-                    fontSize: "14px",
-                  }}
-                >
+                <h4 className="metrics-table-title">
                   Registro completo de {config.label.toLowerCase()} ({sufijoPeriodo})
                 </h4>
-                <div style={{ maxHeight: "250px", overflowY: "auto", paddingRight: "8px" }}>
+                <div className="metrics-table-scroll">
                   {esTecnicos ? (
                     <TablaTecnicos
                       filas={tecnicosPorTipo.filas}
@@ -351,54 +324,31 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
                 </div>
               </div>
 
-              {/* TABLA 2: fija en refacciones */}
-              <div
-                style={{
-                  background: "rgba(255,255,255,0.02)",
-                  padding: "16px",
-                  borderRadius: "8px",
-                }}
-              >
-                <h4
-                  style={{
-                    color: "#e85d25",
-                    marginBottom: "16px",
-                    fontFamily: "IBM Plex Sans",
-                    fontSize: "14px",
-                    fontWeight: 600,
-                  }}
-                >
+              <div className="metrics-table-card">
+                <h4 className="metrics-table-title metrics-table-title--accent">
                   Resumen global de refacciones ({sufijoPeriodo})
                 </h4>
-                <div style={{ maxHeight: "220px", overflowY: "auto", paddingRight: "8px" }}>
-                  <table style={TABLA}>
-                    <thead style={THEAD}>
+                <div className="metrics-table-scroll metrics-table-scroll--shorter">
+                  <table className="metrics-table">
+                    <thead>
                       <tr>
-                        <th style={TH}>Refacción</th>
-                        <th style={{ ...TH, textAlign: "right" }}>Uso</th>
+                        <th>Refacción</th>
+                        <th className="text-right">Uso</th>
                       </tr>
                     </thead>
                     <tbody>
                       {todasLasRefacciones.length === 0 ? (
                         <tr>
-                          <td colSpan="2" style={TD_VACIO}>
+                          <td colSpan="2" className="metrics-table__empty">
                             No hay refacciones registradas en este periodo.
                           </td>
                         </tr>
                       ) : (
                         todasLasRefacciones.map((item, index) => (
                           <tr key={index}>
-                            <td style={TD}>{item.nombre}</td>
-                            <td
-                              style={{
-                                ...TD,
-                                fontWeight: 600,
-                                textAlign: "right",
-                                fontFamily: "IBM Plex Mono",
-                              }}
-                            >
-                              {formatearNumero(item.cantidad)}{" "}
-                              {item.cantidad === 1 ? "vez" : "veces"}
+                            <td>{item.nombre}</td>
+                            <td className="metrics-table__count">
+                              {formatearNumero(item.cantidad)} {item.cantidad === 1 ? "vez" : "veces"}
                             </td>
                           </tr>
                         ))
@@ -415,14 +365,6 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
   );
 }
 
-/* ---------- Estilos de tabla compartidos ---------- */
-
-const TABLA = { width: "100%", textAlign: "left", borderCollapse: "collapse", fontSize: "13px" };
-const THEAD = { position: "sticky", top: 0, background: "#1e2226", zIndex: 10 };
-const TH = { padding: "8px", borderBottom: "1px solid #3a4148", color: "#929aa2", fontWeight: 600 };
-const TD = { padding: "8px", borderBottom: "1px solid #2b3035", color: "#edeae3" };
-const TD_VACIO = { padding: "16px", textAlign: "center", color: "#929aa2" };
-
 /* ---------- Subcomponentes ---------- */
 
 function BotonFiltro({ activo, onClick, children }) {
@@ -430,17 +372,7 @@ function BotonFiltro({ activo, onClick, children }) {
     <button
       type="button"
       onClick={onClick}
-      style={{
-        padding: "4px 12px",
-        borderRadius: "16px",
-        border: `1px solid ${activo ? "#e85d25" : "#3a4148"}`,
-        background: activo ? "rgba(232, 93, 37, 0.1)" : "transparent",
-        color: activo ? "#e85d25" : "#929aa2",
-        cursor: "pointer",
-        fontSize: "12px",
-        fontFamily: "IBM Plex Sans",
-        transition: "all 0.2s ease",
-      }}
+      className={`filter-btn ${activo ? "filter-btn--active" : ""}`}
     >
       {children}
     </button>
@@ -449,35 +381,25 @@ function BotonFiltro({ activo, onClick, children }) {
 
 function TablaSimple({ etiqueta, unidad, datos, vacio }) {
   return (
-    <table style={TABLA}>
-      <thead style={THEAD}>
+    <table className="metrics-table">
+      <thead>
         <tr>
-          <th style={TH}>{etiqueta}</th>
-          <th style={{ ...TH, textAlign: "right" }}>{unidad}</th>
+          <th>{etiqueta}</th>
+          <th className="text-right">{unidad}</th>
         </tr>
       </thead>
       <tbody>
         {datos.length === 0 ? (
           <tr>
-            <td colSpan="2" style={TD_VACIO}>
+            <td colSpan="2" className="metrics-table__empty">
               {vacio}
             </td>
           </tr>
         ) : (
           datos.map((item, index) => (
             <tr key={index}>
-              <td style={TD}>{item.nombre}</td>
-              <td
-                style={{
-                  ...TD,
-                  color: "#e85d25",
-                  fontWeight: 600,
-                  textAlign: "right",
-                  fontFamily: "IBM Plex Mono",
-                }}
-              >
-                {formatearNumero(item.cantidad)}
-              </td>
+              <td>{item.nombre}</td>
+              <td className="metrics-table__count">{formatearNumero(item.cantidad)}</td>
             </tr>
           ))
         )}
@@ -489,58 +411,40 @@ function TablaSimple({ etiqueta, unidad, datos, vacio }) {
 function TablaTecnicos({ filas, tipos, colorPorTipo, vacio }) {
   const colSpan = tipos.length + 2;
   return (
-    <table style={TABLA}>
-      <thead style={THEAD}>
+    <table className="metrics-table">
+      <thead>
         <tr>
-          <th style={TH}>Técnico</th>
+          <th>Técnico</th>
           {tipos.map((tipo) => (
-            <th key={tipo} style={{ ...TH, textAlign: "right" }}>
+            <th key={tipo} className="text-right">
               <span
                 aria-hidden="true"
-                style={{
-                  display: "inline-block",
-                  width: 8,
-                  height: 8,
-                  marginRight: 6,
-                  background: colorPorTipo[tipo],
-                }}
+                className="metrics-table__swatch"
+                style={{ backgroundColor: colorPorTipo[tipo] }}
               />
               {tipo}
             </th>
           ))}
-          <th style={{ ...TH, textAlign: "right" }}>Total</th>
+          <th className="text-right">Total</th>
         </tr>
       </thead>
       <tbody>
         {filas.length === 0 ? (
           <tr>
-            <td colSpan={colSpan} style={TD_VACIO}>
+            <td colSpan={colSpan} className="metrics-table__empty">
               {vacio}
             </td>
           </tr>
         ) : (
           filas.map((fila) => (
             <tr key={fila.nombre}>
-              <td style={TD}>{fila.nombre}</td>
+              <td>{fila.nombre}</td>
               {tipos.map((tipo) => (
-                <td
-                  key={tipo}
-                  style={{ ...TD, textAlign: "right", fontFamily: "IBM Plex Mono" }}
-                >
+                <td key={tipo} className="text-right" style={{ fontFamily: "IBM Plex Mono" }}>
                   {formatearNumero(fila[tipo] || 0)}
                 </td>
               ))}
-              <td
-                style={{
-                  ...TD,
-                  color: "#e85d25",
-                  fontWeight: 600,
-                  textAlign: "right",
-                  fontFamily: "IBM Plex Mono",
-                }}
-              >
-                {formatearNumero(fila.total)}
-              </td>
+              <td className="metrics-table__count">{formatearNumero(fila.total)}</td>
             </tr>
           ))
         )}
@@ -553,10 +457,7 @@ function EstadoVacio({ mensaje }) {
   return (
     <div className="chart-state">
       <GaugeIcon />
-      <p>
-        {mensaje ||
-          "Sin datos todavía. Sincroniza con la nube o sube un Excel para ver la gráfica."}
-      </p>
+      <p>{mensaje || "Sin datos todavía. Sincroniza con la nube o sube un Excel para ver la gráfica."}</p>
     </div>
   );
 }
@@ -592,12 +493,7 @@ function GaugeIcon() {
 function AlertIcon() {
   return (
     <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path
-        d="M12 4 21 19H3L12 4Z"
-        stroke="currentColor"
-        strokeWidth="1.4"
-        strokeLinejoin="round"
-      />
+      <path d="M12 4 21 19H3L12 4Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
       <path d="M12 10v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       <circle cx="12" cy="16.6" r="0.9" fill="currentColor" />
     </svg>
@@ -605,14 +501,11 @@ function AlertIcon() {
 }
 
 /* ---------- Utilidades ---------- */
-
-// Tipo de mantenimiento normalizado; los registros sin tipo caen en "Sin tipo"
 function tipoDe(r) {
   const t = r?.tipoMantenimiento;
   return typeof t === "string" && t.trim() ? t.trim() : SIN_TIPO;
 }
 
-// Agrupa por el campo indicado y cuenta ocurrencias
 function agruparDatos(registros, campo) {
   if (!Array.isArray(registros) || registros.length === 0) return [];
 
@@ -628,8 +521,6 @@ function agruparDatos(registros, campo) {
     .sort((a, b) => b.cantidad - a.cantidad);
 }
 
-// Agrupa por técnico y, dentro de cada uno, por tipo de mantenimiento.
-// Devuelve filas ordenadas de mayor a menor total, y los tipos presentes.
 function agruparPorTecnicoYTipo(registros) {
   if (!Array.isArray(registros) || registros.length === 0) {
     return { filas: [], tipos: [] };

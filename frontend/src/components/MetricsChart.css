@@ -1,8 +1,12 @@
+/* --- CONTENEDOR PRINCIPAL --- */
 .chart-panel {
   padding: 18px 20px 24px;
   min-height: 520px;
   display: flex;
   flex-direction: column;
+  box-sizing: border-box;
+  overflow-x: hidden;
+  max-width: 100%;
 }
 
 .chart-panel__head {
@@ -12,6 +16,8 @@
   margin-bottom: 18px;
   padding-bottom: 14px;
   border-bottom: 1px solid var(--line);
+  box-sizing: border-box;
+  flex-wrap: wrap; /* Permite acomodar elementos si no hay espacio */
 }
 
 .chart-panel__eyebrow {
@@ -31,6 +37,70 @@
   display: flex;
 }
 
+.chart-panel__content {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+/* --- TABS --- */
+.chart-panel__tabs {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+  flex-wrap: wrap;
+  box-sizing: border-box;
+}
+
+.chart-panel__tab {
+  padding: 4px 12px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+  color: #929aa2;
+  background: transparent;
+  border: 1px solid #3a4148;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+
+.chart-panel__tab.is-active {
+  color: #edeae3;
+  background: #e85d25;
+  border-color: #e85d25;
+}
+
+/* --- FILTROS Y BOTONES --- */
+.chart-panel__filters {
+  margin-top: 16px;
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  width: 100%;
+}
+
+.chart-panel__filters--secondary {
+  margin-top: 8px;
+}
+
+.filter-btn {
+  padding: 4px 12px;
+  border-radius: 16px;
+  border: 1px solid #3a4148;
+  background: transparent;
+  color: #929aa2;
+  cursor: pointer;
+  font-size: 12px;
+  font-family: "IBM Plex Sans", sans-serif;
+  transition: all 0.2s ease;
+}
+
+.filter-btn--active {
+  border-color: #e85d25;
+  background: rgba(232, 93, 37, 0.1);
+  color: #e85d25;
+}
+
+/* --- ESTADOS (CARGANDO/VACÍO/ERROR) --- */
 .chart-state {
   margin: auto;
   text-align: center;
@@ -62,55 +132,151 @@
 }
 
 @keyframes spin {
-  to {
-    transform: rotate(360deg);
-  }
-}
-.chart-panel__tabs {
-  display: flex;
-  gap: 6px;
-  margin-left: auto;
+  to { transform: rotate(360deg); }
 }
 
-.chart-panel__tab {
-  padding: 4px 12px;
-  font-family: "IBM Plex Sans", sans-serif;
-  font-size: 12.5px;
-  color: #929aa2;
-  background: transparent;
-  border: 1px solid #3a4148;
-  cursor: pointer;
+/* --- WRAPPERS DE GRÁFICAS Y TABLAS --- */
+.chart-panel__chart-wrapper {
+  width: 100%;
+  height: 440px;
 }
 
-.chart-panel__tab.is-active {
+.chart-panel__tables-wrapper {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-top: 40px;
+  border-top: 1px solid #3a4148;
+  padding-top: 24px;
+}
+
+/* --- ESTILOS DE TABLAS DE MÉTRICAS --- */
+.metrics-table-title {
   color: #edeae3;
-  background: #e85d25;
-  border-color: #e85d25;
+  margin-top: 0;
+  margin-bottom: 16px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
 }
+
+.metrics-table-title--accent {
+  color: #e85d25;
+  font-weight: 600;
+}
+
+.metrics-table-scroll {
+  max-height: 250px;
+  overflow-y: auto;
+  padding-right: 8px;
+}
+
+.metrics-table-scroll--shorter {
+  max-height: 220px;
+}
+
+.metrics-table-card {
+  background: rgba(255, 255, 255, 0.02);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+.metrics-table {
+  width: 100%;
+  text-align: left;
+  border-collapse: collapse;
+  font-size: 13px;
+}
+
+.metrics-table thead {
+  position: sticky;
+  top: 0;
+  background: #1e2226;
+  z-index: 10;
+}
+
+.metrics-table th {
+  padding: 8px;
+  border-bottom: 1px solid #3a4148;
+  color: #929aa2;
+  font-weight: 600;
+}
+
+.metrics-table td {
+  padding: 8px;
+  border-bottom: 1px solid #2b3035;
+  color: #edeae3;
+}
+
+.metrics-table__empty {
+  padding: 16px;
+  text-align: center;
+  color: #929aa2;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.metrics-table__count {
+  color: #e85d25 !important;
+  font-weight: 600;
+  text-align: right;
+  font-family: "IBM Plex Mono", monospace;
+}
+
+.metrics-table__swatch {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  margin-right: 6px;
+  border-radius: 1px;
+}
+
+/* --- RESPONSIVIDAD (MÓVILES) --- */
 @media (max-width: 768px) {
-  /* 1. Reducir padding y altura mínima para aprovechar la pantalla */
   .chart-panel {
     padding: 16px;
-    min-height: 400px; 
+    min-height: 400px;
   }
 
-  /* 2. Apilar el título y los tabs */
   .chart-panel__head {
     flex-direction: column;
     align-items: flex-start;
     gap: 16px;
   }
 
-  /* 3. Hacer que el contenedor de pestañas ocupe todo el ancho disponible */
   .chart-panel__tabs {
-    margin-left: 0; /* Remueve el margen automático que lo empujaba a la derecha */
+    margin-left: 0;
     width: 100%;
   }
 
-  /* 4. Mejorar el área de toque y distribuir el ancho equitativamente */
   .chart-panel__tab {
-    flex: 1; /* Las pestañas se reparten el 100% del espacio en partes iguales */
-    padding: 10px 12px; 
+    flex: 1;
+    padding: 10px 12px;
     text-align: center;
+    min-width: 100px;
+  }
+  
+  .filter-btn {
+    padding: 6px 14px; /* Mejor área táctil para los filtros */
+    font-size: 13px;
+  }
+
+  .chart-panel__chart-wrapper {
+    height: 350px;
+  }
+
+  .chart-panel__tables-wrapper {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    margin-top: 24px;
+    padding-top: 24px;
+  }
+
+  .chart-panel__tables-wrapper > div {
+    max-width: 100vw;
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
   }
 }

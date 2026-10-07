@@ -35,10 +35,10 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of(
                 "http://192.168.1.52:5173",
                 "http://localhost:5173",
-                "http://192.168.1.52:8081", // <-- Agrega el acceso vía Nginx
+                "http://192.168.1.52:8081",
                 "http://localhost:8081",
                 "http://192.168.1.52",
-                "http://localhost:5174"// <-- Agrega por si accedes sin especificar puerto (80)
+                "http://localhost:5174"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
         config.setAllowedHeaders(List.of("*"));

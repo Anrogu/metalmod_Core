@@ -10,9 +10,9 @@ const API_BASE = "/api/v1/dashboard";
 
 export default function App() {
   const [metricas, setMetricas] = useState([]);
-  const [estado, setEstado] = useState("idle"); // idle | loading | ready | error
+  const [estado, setEstado] = useState("idle");
   const [errorMsg, setErrorMsg] = useState("");
-  const [vistaApp, setVistaApp] = useState("dashboard"); // dashboard | maquinas
+  const [vistaApp, setVistaApp] = useState("dashboard");
 
   async function cargarDesdeBaseDeDatos() {
     setEstado("loading");
@@ -27,7 +27,6 @@ export default function App() {
     }
   }
 
-  // Carga automatica al entrar al panel, ya no hace falta sincronizar manualmente
   useEffect(() => {
     cargarDesdeBaseDeDatos();
   }, []);
@@ -37,8 +36,8 @@ export default function App() {
       <header className="topbar">
         <div className="topbar__mark">
           <svg width="20" height="20" viewBox="0 0 32 32" aria-hidden="true">
-            <circle cx="16" cy="16" r="6" fill="none" stroke="var(--accent)" strokeWidth="2.5" />
-            <g fill="var(--accent)">
+            <circle cx="16" cy="16" r="6" fill="none" stroke="var(--accent, #e85d25)" strokeWidth="2.5" />
+            <g fill="var(--accent, #e85d25)">
               {[0, 45, 90, 135].map((deg) => (
                 <g key={deg} transform={`rotate(${deg} 16 16)`}>
                   <rect x="14.5" y="2" width="3" height="6" rx="1" />
@@ -58,83 +57,73 @@ export default function App() {
         </div>
       </header>
 
-      <nav style={{ display: "flex", gap: "8px", padding: "16px 24px 0" }}>
+      {/* Se agregó flexWrap para celulares y la clase app-nav */}
+      <nav className="app-nav" style={{ display: "flex", gap: "8px", padding: "16px 24px 0", flexWrap: "wrap" }}>
         <button
           type="button"
+          className="app-nav__btn"
           onClick={() => setVistaApp("dashboard")}
           style={{
-            padding: "6px 14px",
             border: `1px solid ${vistaApp === "dashboard" ? "#e85d25" : "#3a4148"}`,
             background: vistaApp === "dashboard" ? "rgba(232, 93, 37, 0.1)" : "transparent",
             color: vistaApp === "dashboard" ? "#e85d25" : "#929aa2",
-            cursor: "pointer",
-            fontFamily: "IBM Plex Sans",
-            fontSize: "13px",
           }}
         >
           Panel de métricas
         </button>
         <button
           type="button"
+          className="app-nav__btn"
           onClick={() => setVistaApp("maquinas")}
           style={{
-            padding: "6px 14px",
             border: `1px solid ${vistaApp === "maquinas" ? "#e85d25" : "#3a4148"}`,
             background: vistaApp === "maquinas" ? "rgba(232, 93, 37, 0.1)" : "transparent",
             color: vistaApp === "maquinas" ? "#e85d25" : "#929aa2",
-            cursor: "pointer",
-            fontFamily: "IBM Plex Sans",
-            fontSize: "13px",
           }}
         >
           Máquinas
         </button>
         <button
           type="button"
+          className="app-nav__btn"
           onClick={() => setVistaApp("refacciones")}
           style={{
-            padding: "6px 14px",
             border: `1px solid ${vistaApp === "refacciones" ? "#e85d25" : "#3a4148"}`,
             background: vistaApp === "refacciones" ? "rgba(232, 93, 37, 0.1)" : "transparent",
             color: vistaApp === "refacciones" ? "#e85d25" : "#929aa2",
-            cursor: "pointer",
-            fontFamily: "IBM Plex Sans",
-            fontSize: "13px",
           }}
         >
           Refacciones
         </button>
         <button
           type="button"
+          className="app-nav__btn"
           onClick={() => setVistaApp("mantenimientos")}
           style={{
-            padding: "6px 14px",
             border: `1px solid ${vistaApp === "mantenimientos" ? "#e85d25" : "#3a4148"}`,
             background: vistaApp === "mantenimientos" ? "rgba(232, 93, 37, 0.1)" : "transparent",
             color: vistaApp === "mantenimientos" ? "#e85d25" : "#929aa2",
-            cursor: "pointer",
-            fontFamily: "IBM Plex Sans",
-            fontSize: "13px",
           }}
         >
           Mantenimientos
         </button>
       </nav>
 
+      {/* Clases layout--page agregadas para control de padding en celular */}
       {vistaApp === "maquinas" && (
-        <main className="layout" style={{ display: "block", padding: "24px" }}>
+        <main className="layout layout--page" style={{ display: "block", padding: "24px" }}>
           <MaquinasPage />
         </main>
       )}
 
       {vistaApp === "refacciones" && (
-        <main className="layout" style={{ display: "block", padding: "24px" }}>
+        <main className="layout layout--page" style={{ display: "block", padding: "24px" }}>
           <RefaccionesPage />
         </main>
       )}
 
       {vistaApp === "mantenimientos" && (
-        <main className="layout" style={{ display: "block", padding: "24px" }}>
+        <main className="layout layout--page" style={{ display: "block", padding: "24px" }}>
           <MantenimientosPage />
         </main>
       )}
@@ -158,6 +147,7 @@ export default function App() {
   );
 }
 
+// Funciones helpers (sin cambios)
 async function obtenerRegistrosDb() {
   const res = await fetch(`${API_BASE}/registros`);
   if (!res.ok) {
@@ -170,23 +160,15 @@ async function obtenerRegistrosDb() {
 
 function textoEstado(estado) {
   switch (estado) {
-    case "loading":
-      return "Cargando datos";
-    case "ready":
-      return "Datos cargados";
-    case "error":
-      return "Error de carga";
-    default:
-      return "En espera";
+    case "loading": return "Cargando datos";
+    case "ready": return "Datos cargados";
+    case "error": return "Error de carga";
+    default: return "En espera";
   }
 }
 
 function mensajeDeError(err) {
-  if (err.response) {
-    return `El servidor respondió con error ${err.response.status}. Verifica que metalmod-core esté corriendo.`;
-  }
-  if (err.request) {
-    return "No se obtuvo respuesta del backend. Confirma que metalmod-core esté corriendo y accesible.";
-  }
+  if (err.response) return `El servidor respondió con error ${err.response.status}. Verifica que metalmod-core esté corriendo.`;
+  if (err.request) return "No se obtuvo respuesta del backend. Confirma que metalmod-core esté corriendo y accesible.";
   return "No se pudo procesar la solicitud. Intenta de nuevo.";
 }
