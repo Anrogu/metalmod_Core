@@ -1,8 +1,10 @@
+/* --- ESTILOS BASE (ESCRITORIO) --- */
 .readouts {
   padding: 18px;
   display: flex;
   flex-direction: column;
   gap: 14px;
+  box-sizing: border-box;
 }
 
 .readouts__eyebrow {
@@ -40,37 +42,8 @@
 .readout__value.is-accent {
   color: var(--accent);
 }
-@media (max-width: 768px) {
-  /* 1. Convertir la lista vertical en una cuadrícula de 2 columnas */
-  .readouts {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 16px 12px;
-    padding: 16px;
-  }
 
-  /* 2. Asegurar que el pequeño título superior ocupe toda la fila */
-  .readouts__eyebrow {
-    grid-column: 1 / -1;
-    margin-bottom: 4px;
-  }
-
-  /* 3. Cambiar el separador inferior por un borde lateral para el formato de cuadrícula */
-  .readout {
-    border-bottom: none;
-    border-left: 2px solid var(--line);
-    padding-bottom: 0;
-    padding-left: 12px;
-  }
-
-  /* 4. Prevenir que los valores largos rompan el diseño en pantallas pequeñas */
-  .readout__value {
-    font-size: 17px; /* Reducción sutil para encajar mejor en 2 columnas */
-    word-break: break-word;
-  }
-}
-/* ==== Agregar esto al final de tu Readouts.css existente ==== */
-
+/* ==== SECCIÓN TOP 3 ==== */
 .readouts__top3-wrap {
   margin-top: 16px;
   padding-top: 16px;
@@ -132,4 +105,52 @@
   color: #e85d25;
   font-family: "IBM Plex Mono", monospace;
   font-weight: 600;
+}
+
+
+/* --- RESPONSIVIDAD (MÓVILES) --- */
+/* Siempre al final para sobrescribir correctamente */
+@media (max-width: 768px) {
+  /* 1. Convertir la lista vertical en una cuadrícula de 2 columnas */
+  .readouts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px 12px;
+    padding: 16px;
+  }
+
+  /* 2. Asegurar que el pequeño título superior ocupe toda la fila */
+  .readouts__eyebrow {
+    grid-column: 1 / -1;
+    margin-bottom: 4px;
+  }
+
+  /* 3. Cambiar el separador inferior por un borde lateral para el formato de cuadrícula */
+  .readout {
+    border-bottom: none;
+    border-left: 2px solid var(--line);
+    padding-bottom: 0;
+    padding-left: 12px;
+  }
+
+  /* 4. Prevenir que los valores largos rompan el diseño en pantallas pequeñas */
+  .readout__value {
+    font-size: 17px; 
+    word-break: break-word;
+  }
+
+  /* 5. Asegurar que la sección del Top 3 no se aplaste en una sola columna */
+  .readouts__top3-wrap {
+    grid-column: 1 / -1; /* Ocupa todo el ancho disponible */
+    margin-top: 8px;
+  }
+
+  /* 6. Darle más respiro a la lista en móviles para mejor lectura */
+  .readouts__top3-lista {
+    gap: 12px;
+  }
+  
+  .readouts__top3-lista li {
+    font-size: 13.5px;
+  }
 }

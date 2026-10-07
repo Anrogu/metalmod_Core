@@ -56,6 +56,7 @@ export default function MantenimientosPage() {
   const [mensajeExito, setMensajeExito] = useState("");
 
   const [filtroMaquina, setFiltroMaquina] = useState("");
+  const [filtroTipo, setFiltroTipo] = useState("");
   const [filtroDesde, setFiltroDesde] = useState("");
   const [filtroHasta, setFiltroHasta] = useState("");
   const [busqueda, setBusqueda] = useState("");
@@ -70,7 +71,7 @@ export default function MantenimientosPage() {
 
   useEffect(() => {
     setPagina(0);
-  }, [busqueda]);
+  }, [busqueda, filtroTipo]);
 
   async function cargarCatalogos() {
     try {
@@ -95,6 +96,7 @@ export default function MantenimientosPage() {
     try {
       const data = await obtenerMantenimientos({
         idMaquina: filtroMaquina || undefined,
+        idTipoMantenimiento: filtroTipo || undefined,
         desde: filtroDesde || undefined,
         hasta: filtroHasta || undefined,
       });
@@ -108,6 +110,13 @@ export default function MantenimientosPage() {
   }
 
   const ticketsFiltrados = tickets.filter((t) => {
+    if (filtroTipo) {
+      const idTipoTicket = t.idTipoMantenimiento || t.tipoMantenimiento; 
+      if (String(idTipoTicket) !== String(filtroTipo)) {
+        return false;
+      }
+    }
+
     if (!busqueda) return true;
     const termino = busqueda.toLowerCase();
     const nombreTec = t.nombreTecnico || t.tecnico || "";
@@ -294,7 +303,7 @@ export default function MantenimientosPage() {
               value={form.idTipoMantenimiento}
               onChange={(e) => {
                 actualizarCampo("idTipoMantenimiento", e.target.value);
-                actualizarCampo("falla", ""); // Limpia el campo de falla/tarea al cambiar de tipo
+                actualizarCampo("falla", ""); 
               }}
               required
             >
@@ -352,11 +361,9 @@ export default function MantenimientosPage() {
                 value={form.solucion}
                 onChange={(e) => actualizarCampo("solucion", e.target.value)}
                 maxLength={255}
-                placeholder="Describe la Solucion presentada..."
               />
             </label>
           )}
-
 
           <label>
             Técnico
@@ -373,7 +380,6 @@ export default function MantenimientosPage() {
               ))}
             </select>
           </label>
-
 
           {!esTipoSinDetalle && (
             <label className="mant-autocomplete">
@@ -460,6 +466,16 @@ export default function MantenimientosPage() {
               </option>
             ))}
           </select>
+
+          <select value={filtroTipo} onChange={(e) => setFiltroTipo(e.target.value)}>
+            <option value="">Todos los tipos</option>
+            {tipos.map((t) => (
+              <option key={t.id} value={t.id}>
+                {t.nombre}
+              </option>
+            ))}
+          </select>
+
           <input
             type="date"
             value={filtroDesde}
