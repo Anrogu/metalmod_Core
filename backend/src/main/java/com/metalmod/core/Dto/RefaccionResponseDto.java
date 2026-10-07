@@ -6,6 +6,8 @@ public record RefaccionResponseDto(
         String descripcion,
         Integer cantidadStock,
         Integer stockMinimo,
-        boolean stockBajo // true si cantidadStock <= stockMinimo, para resaltar en el frontend
+        boolean stockBajo,
+        String codigo
+
 ) {
 }

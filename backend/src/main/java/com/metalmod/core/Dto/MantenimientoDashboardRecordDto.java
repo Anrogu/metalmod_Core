@@ -4,6 +4,8 @@ public record MantenimientoDashboardRecordDto(
         String ma,
         String marca,
         String refaccion,
-        String trimestre
+        String trimestre,
+        String nombreTecnico,
+        String tipoMantenimiento
 ) {
 }

@@ -26,6 +26,7 @@ public interface MantenimientoMapper {
     @Mapping(target = "nombreMaquina", source = "idMaquina.nombre")
     @Mapping(target = "idRefaccion", source = "idRefaccion.id")
     @Mapping(target = "nombreRefaccion", source = "idRefaccion.nombre")
+    @Mapping(target = "idTecnico", source = "tecnico.id")
     @Mapping(target = "nombreTecnico", source = "tecnico.nombre")
     @Mapping(target = "tipoMantenimiento", source = "tipoMantenimiento.id")
     @Mapping(target = "nombreTipoMantenimiento", source = "tipoMantenimiento.nombre") // <-- Agregado aquí para pasarlo al DTO de respuesta
