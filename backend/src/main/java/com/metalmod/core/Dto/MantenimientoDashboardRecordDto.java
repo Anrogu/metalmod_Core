@@ -6,6 +6,7 @@ public record MantenimientoDashboardRecordDto(
         String refaccion,
         String trimestre,
         String nombreTecnico,
-        String tipoMantenimiento
+        String tipoMantenimiento,
+        Integer tiempoInvertidoMinutos
 ) {
 }
