@@ -67,6 +67,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
   const config = VISTAS[vista];
   const esTecnicos = vista === "tecnicos";
 
+  // Tipos de mantenimiento presentes en los datos (botones y colores estables)
   const tiposDisponibles = useMemo(() => {
     const set = new Set(refacciones.map(tipoDe));
     return Array.from(set).sort();
@@ -80,6 +81,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
     return mapa;
   }, [tiposDisponibles]);
 
+  // Filtro por trimestre (todas las vistas) y por tipo (solo técnicos)
   const refaccionesFiltradas = useMemo(() => {
     return refacciones.filter((r) => {
       const okTrim = filtroTrimestre === "Todos" || r.trimestre === filtroTrimestre;
@@ -88,12 +90,14 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
     });
   }, [refacciones, filtroTrimestre, filtroTipo, esTecnicos]);
 
+  // Agrupación simple: nombre, cantidad y minutos acumulados
   const datosCompletos = useMemo(
     () => agruparDatos(refaccionesFiltradas, config.campo),
     [refaccionesFiltradas, config.campo]
   );
   const datosTop10 = useMemo(() => datosCompletos.slice(0, 10).reverse(), [datosCompletos]);
 
+  // Técnicos agrupados por tipo de mantenimiento, con tiempo acumulado
   const tecnicosPorTipo = useMemo(
     () => agruparPorTecnicoYTipo(refaccionesFiltradas),
     [refaccionesFiltradas]
@@ -103,14 +107,16 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
     [tecnicosPorTipo]
   );
 
+  // Tabla fija de refacciones
   const todasLasRefacciones = useMemo(
     () => agruparDatos(refaccionesFiltradas, "refaccion"),
     [refaccionesFiltradas]
   );
 
-  const sufijoPeriodo = esTecnicos && filtroTipo !== "Todos"
-    ? `${filtroTrimestre} · ${filtroTipo}`
-    : filtroTrimestre;
+  const sufijoPeriodo =
+    esTecnicos && filtroTipo !== "Todos"
+      ? `${filtroTrimestre} · ${filtroTipo}`
+      : filtroTrimestre;
 
   return (
     <div className="tick-panel chart-panel">
@@ -199,14 +205,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
                     />
                     <Tooltip
                       cursor={{ strokeDasharray: "3 3", stroke: "#929aa2" }}
-                      contentStyle={TOOLTIP_STYLE}
-                      labelStyle={{ color: "#edeae3", fontWeight: 600, marginBottom: 4 }}
-                      itemStyle={{ color: "#e85d25" }}
-                      formatter={(value, name) =>
-                        name === config.unidad
-                          ? [formatearNumero(value), config.unidad]
-                          : [value, config.label]
-                      }
+                      content={<TooltipMaquina />}
                     />
                     <Scatter data={datosTop10} fill="#e85d25" />
                   </ScatterChart>
@@ -252,6 +251,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
                 </ResponsiveContainer>
               )}
 
+              {/* Técnicos: barras apiladas por tipo de mantenimiento */}
               {esTecnicos && tecnicosTop10.length > 0 && (
                 <ResponsiveContainer width="100%" height="100%">
                   <BarChart
@@ -278,10 +278,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
                     />
                     <Tooltip
                       cursor={{ fill: "rgba(232, 93, 37, 0.06)" }}
-                      contentStyle={TOOLTIP_STYLE}
-                      labelStyle={{ color: "#edeae3", fontWeight: 600, marginBottom: 4 }}
-                      itemStyle={{ color: "#edeae3" }}
-                      formatter={(value, name) => [formatearNumero(value), name]}
+                      content={<TooltipTecnico />}
                     />
                     <Legend wrapperStyle={{ fontSize: 12, color: "#929aa2" }} />
                     {tecnicosPorTipo.tipos.map((tipo) => (
@@ -319,6 +316,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
                       unidad={config.unidad}
                       datos={datosCompletos}
                       vacio={config.vacio}
+                      mostrarTiempo={vista === "maquinas"}
                     />
                   )}
                 </div>
@@ -348,7 +346,8 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
                           <tr key={index}>
                             <td>{item.nombre}</td>
                             <td className="metrics-table__count">
-                              {formatearNumero(item.cantidad)} {item.cantidad === 1 ? "vez" : "veces"}
+                              {formatearNumero(item.cantidad)}{" "}
+                              {item.cantidad === 1 ? "vez" : "veces"}
                             </td>
                           </tr>
                         ))
@@ -379,19 +378,52 @@ function BotonFiltro({ activo, onClick, children }) {
   );
 }
 
-function TablaSimple({ etiqueta, unidad, datos, vacio }) {
+// Tooltip de la gráfica de máquinas: fallas y tiempo acumulado
+function TooltipMaquina({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div style={{ ...TOOLTIP_STYLE, padding: "8px 12px", color: "#edeae3" }}>
+      <div style={{ fontWeight: 600, marginBottom: 4 }}>{d.nombre}</div>
+      <div style={{ color: "#e85d25" }}>Fallas: {formatearNumero(d.cantidad)}</div>
+      <div style={{ color: "#e85d25" }}>Tiempo total: {formatearDuracion(d.minutos)}</div>
+    </div>
+  );
+}
+
+// Tooltip de la gráfica de técnicos: desglose por tipo, total y tiempo
+function TooltipTecnico({ active, payload }) {
+  if (!active || !payload?.length) return null;
+  const d = payload[0].payload;
+  return (
+    <div style={{ ...TOOLTIP_STYLE, padding: "8px 12px", color: "#edeae3" }}>
+      <div style={{ fontWeight: 600, marginBottom: 4 }}>{d.nombre}</div>
+      {payload.map((p) => (
+        <div key={p.dataKey} style={{ color: p.color }}>
+          {p.name}: {formatearNumero(p.value)}
+        </div>
+      ))}
+      <div style={{ marginTop: 4, borderTop: "1px solid #3a4148", paddingTop: 4 }}>
+        Total: {formatearNumero(d.total)} · Tiempo: {formatearDuracion(d.minutos)}
+      </div>
+    </div>
+  );
+}
+
+function TablaSimple({ etiqueta, unidad, datos, vacio, mostrarTiempo = false }) {
   return (
     <table className="metrics-table">
       <thead>
         <tr>
           <th>{etiqueta}</th>
           <th className="text-right">{unidad}</th>
+          {mostrarTiempo && <th className="text-right">Tiempo total</th>}
         </tr>
       </thead>
       <tbody>
         {datos.length === 0 ? (
           <tr>
-            <td colSpan="2" className="metrics-table__empty">
+            <td colSpan={mostrarTiempo ? 3 : 2} className="metrics-table__empty">
               {vacio}
             </td>
           </tr>
@@ -400,6 +432,11 @@ function TablaSimple({ etiqueta, unidad, datos, vacio }) {
             <tr key={index}>
               <td>{item.nombre}</td>
               <td className="metrics-table__count">{formatearNumero(item.cantidad)}</td>
+              {mostrarTiempo && (
+                <td className="text-right" style={{ fontFamily: "IBM Plex Mono" }}>
+                  {formatearDuracion(item.minutos)}
+                </td>
+              )}
             </tr>
           ))
         )}
@@ -409,7 +446,7 @@ function TablaSimple({ etiqueta, unidad, datos, vacio }) {
 }
 
 function TablaTecnicos({ filas, tipos, colorPorTipo, vacio }) {
-  const colSpan = tipos.length + 2;
+  const colSpan = tipos.length + 3;
   return (
     <table className="metrics-table">
       <thead>
@@ -426,6 +463,7 @@ function TablaTecnicos({ filas, tipos, colorPorTipo, vacio }) {
             </th>
           ))}
           <th className="text-right">Total</th>
+          <th className="text-right">Tiempo total</th>
         </tr>
       </thead>
       <tbody>
@@ -445,6 +483,9 @@ function TablaTecnicos({ filas, tipos, colorPorTipo, vacio }) {
                 </td>
               ))}
               <td className="metrics-table__count">{formatearNumero(fila.total)}</td>
+              <td className="text-right" style={{ fontFamily: "IBM Plex Mono" }}>
+                {formatearDuracion(fila.minutos)}
+              </td>
             </tr>
           ))
         )}
@@ -457,7 +498,10 @@ function EstadoVacio({ mensaje }) {
   return (
     <div className="chart-state">
       <GaugeIcon />
-      <p>{mensaje || "Sin datos todavía. Sincroniza con la nube o sube un Excel para ver la gráfica."}</p>
+      <p>
+        {mensaje ||
+          "Sin datos todavía. Sincroniza con la nube o sube un Excel para ver la gráfica."}
+      </p>
     </div>
   );
 }
@@ -493,7 +537,12 @@ function GaugeIcon() {
 function AlertIcon() {
   return (
     <svg width="34" height="34" viewBox="0 0 24 24" fill="none" aria-hidden="true">
-      <path d="M12 4 21 19H3L12 4Z" stroke="currentColor" strokeWidth="1.4" strokeLinejoin="round" />
+      <path
+        d="M12 4 21 19H3L12 4Z"
+        stroke="currentColor"
+        strokeWidth="1.4"
+        strokeLinejoin="round"
+      />
       <path d="M12 10v4" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" />
       <circle cx="12" cy="16.6" r="0.9" fill="currentColor" />
     </svg>
@@ -501,26 +550,32 @@ function AlertIcon() {
 }
 
 /* ---------- Utilidades ---------- */
+
+// Tipo de mantenimiento normalizado; sin tipo cae en "Sin tipo"
 function tipoDe(r) {
   const t = r?.tipoMantenimiento;
   return typeof t === "string" && t.trim() ? t.trim() : SIN_TIPO;
 }
 
+// Agrupa por el campo indicado: cuenta ocurrencias y suma minutos invertidos
 function agruparDatos(registros, campo) {
   if (!Array.isArray(registros) || registros.length === 0) return [];
 
-  const conteo = new Map();
+  const grupos = new Map();
   for (const r of registros) {
     const valor = String(r[campo] ?? "").trim();
     if (!valor) continue;
-    conteo.set(valor, (conteo.get(valor) || 0) + 1);
+
+    const g = grupos.get(valor) || { nombre: valor, cantidad: 0, minutos: 0 };
+    g.cantidad += 1;
+    g.minutos += Number(r.tiempoInvertidoMinutos) || 0;
+    grupos.set(valor, g);
   }
 
-  return Array.from(conteo.entries())
-    .map(([nombre, cantidad]) => ({ nombre, cantidad }))
-    .sort((a, b) => b.cantidad - a.cantidad);
+  return Array.from(grupos.values()).sort((a, b) => b.cantidad - a.cantidad);
 }
 
+// Agrupa por técnico y, dentro de cada uno, por tipo; suma también el tiempo
 function agruparPorTecnicoYTipo(registros) {
   if (!Array.isArray(registros) || registros.length === 0) {
     return { filas: [], tipos: [] };
@@ -536,9 +591,10 @@ function agruparPorTecnicoYTipo(registros) {
     const tipo = tipoDe(r);
     tipos.add(tipo);
 
-    const fila = porTecnico.get(tecnico) || { nombre: tecnico, total: 0 };
+    const fila = porTecnico.get(tecnico) || { nombre: tecnico, total: 0, minutos: 0 };
     fila[tipo] = (fila[tipo] || 0) + 1;
     fila.total += 1;
+    fila.minutos += Number(r.tiempoInvertidoMinutos) || 0;
     porTecnico.set(tecnico, fila);
   }
 
@@ -550,4 +606,13 @@ function agruparPorTecnicoYTipo(registros) {
 
 function formatearNumero(n) {
   return new Intl.NumberFormat("es-MX", { maximumFractionDigits: 2 }).format(n);
+}
+
+// 0 o vacío -> "—"; 95 -> "1 h 35 min"; 120 -> "2 h"; 45 -> "45 min"
+function formatearDuracion(minutos) {
+  if (!minutos) return "—";
+  const h = Math.floor(minutos / 60);
+  const m = minutos % 60;
+  if (h === 0) return `${m} min`;
+  return m === 0 ? `${h} h` : `${h} h ${m} min`;
 }

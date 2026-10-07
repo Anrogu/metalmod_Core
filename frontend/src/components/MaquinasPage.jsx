@@ -260,6 +260,7 @@ if (nombreDuplicado) {
               onChange={(e) => actualizarCampo("nombre", e.target.value)}
               required
               maxLength={150}
+              placeholder="Ej. MA 102"
             />
           </label>
 

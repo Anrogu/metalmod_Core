@@ -361,6 +361,7 @@ export default function MantenimientosPage() {
                 value={form.solucion}
                 onChange={(e) => actualizarCampo("solucion", e.target.value)}
                 maxLength={255}
+                placeholder="Describe la solucion presentada..."
               />
             </label>
           )}
