@@ -8,6 +8,7 @@ import { obtenerMaquinas } from "../api/maquinasApi";
 import { obtenerRefacciones } from "../api/refaccionesApi";
 import { obtenerTecnicos } from "../api/tecnicosApi";
 import { obtenerTiposMantenimiento } from "../api/tiposMantenimientoApi";
+import { useSesion } from "../auth/SesionContext";
 import "./MantenimientosPage.css";
 
 const FORM_VACIO = {
@@ -44,6 +45,7 @@ const TAREAS_RECORRIDO = [
 const POR_PAGINA = 10;
 
 export default function MantenimientosPage() {
+  const { esAdmin } = useSesion();
   const [tickets, setTickets] = useState([]);
   const [maquinas, setMaquinas] = useState([]);
   const [refacciones, setRefacciones] = useState([]);
@@ -516,9 +518,11 @@ export default function MantenimientosPage() {
                 <td>{t.nombreTecnico || t.tecnico || "—"}</td>
                 <td>{formatearTiempo(t.tiempoInvertidoMinutos)}</td>
                 <td>
-                  <button type="button" onClick={() => manejarEliminar(t.id)}>
-                    Eliminar
-                  </button>
+                  {esAdmin && (
+                    <button type="button" onClick={() => manejarEliminar(t.id)}>
+                      Eliminar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

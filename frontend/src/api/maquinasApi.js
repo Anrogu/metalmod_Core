@@ -1,3 +1,5 @@
+import { apiFetch } from "./http";
+
 // 1. Cambiamos la ruta a relativa para que Nginx la intercepte
 const API_BASE = "/api/v1";
 
@@ -20,12 +22,12 @@ export async function obtenerMaquinas(nombre) {
   // 2. Agregamos window.location.origin al constructor URL
   const url = new URL(`${API_BASE}/maquinas`, window.location.origin);
   if (nombre) url.searchParams.set("nombre", nombre);
-  return manejarRespuesta(await fetch(url));
+  return manejarRespuesta(await apiFetch(url));
 }
 
 export async function crearMaquina(payload) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/maquinas`, {
+    await apiFetch(`${API_BASE}/maquinas`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -35,7 +37,7 @@ export async function crearMaquina(payload) {
 
 export async function actualizarMaquina(id, payload) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/maquinas/${id}`, {
+    await apiFetch(`${API_BASE}/maquinas/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -45,7 +47,7 @@ export async function actualizarMaquina(id, payload) {
 
 export async function cambiarEstadoMaquina(id, codigoEstado) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/maquinas/${id}/estado`, {
+    await apiFetch(`${API_BASE}/maquinas/${id}/estado`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ codigoEstado }),
@@ -54,12 +56,12 @@ export async function cambiarEstadoMaquina(id, codigoEstado) {
 }
 
 export async function obtenerMarcas() {
-  return manejarRespuesta(await fetch(`${API_BASE}/marcas`));
+  return manejarRespuesta(await apiFetch(`${API_BASE}/marcas`));
 }
 
 export async function crearMarca(nombre) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/marcas`, {
+    await apiFetch(`${API_BASE}/marcas`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre }),
@@ -68,12 +70,12 @@ export async function crearMarca(nombre) {
 }
 
 export async function obtenerModelos() {
-  return manejarRespuesta(await fetch(`${API_BASE}/modelos`));
+  return manejarRespuesta(await apiFetch(`${API_BASE}/modelos`));
 }
 
 export async function crearModelo(nombre) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/modelos`, {
+    await apiFetch(`${API_BASE}/modelos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre }),

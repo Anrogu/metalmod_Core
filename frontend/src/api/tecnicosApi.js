@@ -1,3 +1,5 @@
+import { apiFetch } from "./http";
+
 // Cambiamos la ruta a relativa para que Nginx la intercepte
 const API_BASE = "/api/v1";
 
@@ -20,12 +22,12 @@ export async function obtenerTecnicos(nombre) {
   // Agregamos window.location.origin al constructor URL
   const url = new URL(`${API_BASE}/tecnicos`, window.location.origin);
   if (nombre) url.searchParams.set("nombre", nombre);
-  return manejarRespuesta(await fetch(url));
+  return manejarRespuesta(await apiFetch(url));
 }
 
 export async function crearTecnico(payload) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/tecnicos`, {
+    await apiFetch(`${API_BASE}/tecnicos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -35,7 +37,7 @@ export async function crearTecnico(payload) {
 
 export async function actualizarTecnico(id, payload) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/tecnicos/${id}`, {
+    await apiFetch(`${API_BASE}/tecnicos/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -45,7 +47,7 @@ export async function actualizarTecnico(id, payload) {
 
 export async function eliminarTecnico(id) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/tecnicos/${id}`, {
+    await apiFetch(`${API_BASE}/tecnicos/${id}`, {
       method: "DELETE",
     })
   );

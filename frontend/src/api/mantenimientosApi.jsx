@@ -1,3 +1,5 @@
+import { apiFetch } from "./http";
+
 const API_BASE = "/api/v1";
 
 async function manejarRespuesta(res) {
@@ -23,11 +25,11 @@ export async function obtenerMantenimientos({ idMaquina, desde, hasta } = {}) {
   if (desde) url.searchParams.set("desde", desde);
   if (hasta) url.searchParams.set("hasta", hasta);
   
-  return manejarRespuesta(await fetch(url));
+  return manejarRespuesta(await apiFetch(url));
 }
 export async function crearMantenimiento(payload) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/mantenimientos`, {
+    await apiFetch(`${API_BASE}/mantenimientos`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -37,6 +39,6 @@ export async function crearMantenimiento(payload) {
 
 export async function eliminarMantenimiento(id) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/mantenimientos/${id}`, { method: "DELETE" })
+    await apiFetch(`${API_BASE}/mantenimientos/${id}`, { method: "DELETE" })
   );
 }

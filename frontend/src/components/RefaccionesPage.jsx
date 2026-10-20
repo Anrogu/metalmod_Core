@@ -5,12 +5,14 @@ import {
   actualizarRefaccion,
   eliminarRefaccion,
 } from "../api/refaccionesApi";
+import { useSesion } from "../auth/SesionContext";
 import "./RefaccionesPage.css";
 
 const FORM_VACIO = { codigo: "", nombre: "", descripcion: "", cantidadStock: "0", stockMinimo: "0" };
 const POR_PAGINA = 10;
 
 export default function RefaccionesPage() {
+  const { esAdmin } = useSesion();
   const [refacciones, setRefacciones] = useState([]);
   const [form, setForm] = useState(FORM_VACIO);
   const [editandoId, setEditandoId] = useState(null);
@@ -312,9 +314,11 @@ if (codigoLimpio) {
                   <button type="button" onClick={() => iniciarEdicion(r)}>
                     Editar
                   </button>
-                  <button type="button" onClick={() => manejarEliminar(r.id)}>
-                    Eliminar
-                  </button>
+                  {esAdmin && (
+                    <button type="button" onClick={() => manejarEliminar(r.id)}>
+                      Eliminar
+                    </button>
+                  )}
                 </td>
               </tr>
             ))}

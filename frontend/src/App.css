@@ -169,3 +169,35 @@
     padding: 16px 0 !important; /* Las páginas internas ya tienen su propio padding, esto evita doble espaciado */
   }
 }
+
+/* --- Usuario en sesion (barra superior) --- */
+.topbar__right {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.topbar__user {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.topbar__user button {
+  padding: 6px 10px;
+  font: inherit;
+  font-size: 12px;
+  color: var(--text-muted);
+  background: transparent;
+  border: 1px solid var(--line-strong);
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.topbar__user button:hover {
+  color: var(--text);
+  border-color: var(--accent);
+}

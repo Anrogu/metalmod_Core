@@ -1,3 +1,5 @@
+import { apiFetch } from "./http";
+
 const API_BASE = "/api/v1";
 
 async function manejarRespuesta(res) {
@@ -19,12 +21,12 @@ export async function obtenerRefacciones(nombre) {
   // AQUÍ ESTÁ EL CAMBIO: Se agrega window.location.origin
   const url = new URL(`${API_BASE}/refacciones`, window.location.origin);
   if (nombre) url.searchParams.set("nombre", nombre);
-  return manejarRespuesta(await fetch(url));
+  return manejarRespuesta(await apiFetch(url));
 }
 
 export async function crearRefaccion(payload) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/refacciones`, {
+    await apiFetch(`${API_BASE}/refacciones`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -34,7 +36,7 @@ export async function crearRefaccion(payload) {
 
 export async function actualizarRefaccion(id, payload) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/refacciones/${id}`, {
+    await apiFetch(`${API_BASE}/refacciones/${id}`, {
       method: "PUT",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
@@ -44,6 +46,6 @@ export async function actualizarRefaccion(id, payload) {
 
 export async function eliminarRefaccion(id) {
   return manejarRespuesta(
-    await fetch(`${API_BASE}/refacciones/${id}`, { method: "DELETE" })
+    await apiFetch(`${API_BASE}/refacciones/${id}`, { method: "DELETE" })
   );
 }

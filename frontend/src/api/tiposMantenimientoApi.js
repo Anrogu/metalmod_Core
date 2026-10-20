@@ -1,3 +1,5 @@
+import { apiFetch } from "./http";
+
 const API_BASE = "/api/v1";
 
 async function manejarRespuesta(res) {
@@ -16,5 +18,5 @@ async function manejarRespuesta(res) {
 }
 
 export async function obtenerTiposMantenimiento() {
-  return manejarRespuesta(await fetch(`${API_BASE}/tipo`));
+  return manejarRespuesta(await apiFetch(`${API_BASE}/tipo`));
 }

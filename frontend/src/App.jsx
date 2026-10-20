@@ -4,11 +4,15 @@ import MetricsChart from "./components/MetricsChart";
 import MaquinasPage from "./components/MaquinasPage";
 import RefaccionesPage from "./components/RefaccionesPage";
 import MantenimientosPage from "./components/MantenimientosPage";
+import LoginPage from "./components/LoginPage";
+import { obtenerSesion, cerrarSesion } from "./api/authApi";
+import { apiFetch, EVENTO_SESION_EXPIRADA } from "./api/http";
+import { SesionContext } from "./auth/SesionContext";
 import "./App.css";
 
 const API_BASE = "/api/v1/dashboard";
 
-export default function App() {
+function Panel({ sesion, onCerrarSesion }) {
   const [metricas, setMetricas] = useState([]);
   const [estado, setEstado] = useState("idle");
   const [errorMsg, setErrorMsg] = useState("");
@@ -51,9 +55,15 @@ export default function App() {
             <div className="topbar__subtitle">Panel de métricas de planta</div>
           </div>
         </div>
-        <div className={`topbar__status topbar__status--${estado}`}>
-          <span className="dot" />
-          {textoEstado(estado)}
+        <div className="topbar__right">
+          <div className={`topbar__status topbar__status--${estado}`}>
+            <span className="dot" />
+            {textoEstado(estado)}
+          </div>
+          <div className="topbar__user">
+            <span>{sesion.username} · {sesion.rol}</span>
+            <button type="button" onClick={onCerrarSesion}>Cerrar sesión</button>
+          </div>
         </div>
       </header>
 
@@ -147,9 +157,43 @@ export default function App() {
   );
 }
 
+export default function App() {
+  const [sesion, setSesion] = useState(null);
+  const [verificando, setVerificando] = useState(true);
+
+  useEffect(() => {
+    obtenerSesion()
+      .then(setSesion)
+      .catch(() => setSesion(null))
+      .finally(() => setVerificando(false));
+
+    // Cualquier 401 en la app (sesion vencida) regresa al login.
+    const alExpirar = () => setSesion(null);
+    window.addEventListener(EVENTO_SESION_EXPIRADA, alExpirar);
+    return () => window.removeEventListener(EVENTO_SESION_EXPIRADA, alExpirar);
+  }, []);
+
+  async function salir() {
+    try {
+      await cerrarSesion();
+    } finally {
+      setSesion(null);
+    }
+  }
+
+  if (verificando) return null;
+  if (!sesion) return <LoginPage onSesionIniciada={setSesion} />;
+
+  return (
+    <SesionContext.Provider value={{ ...sesion, esAdmin: sesion.rol === "ADMINISTRADOR" }}>
+      <Panel sesion={sesion} onCerrarSesion={salir} />
+    </SesionContext.Provider>
+  );
+}
+
 // Funciones helpers (sin cambios)
 async function obtenerRegistrosDb() {
-  const res = await fetch(`${API_BASE}/registros`);
+  const res = await apiFetch(`${API_BASE}/registros`);
   if (!res.ok) {
     const error = new Error("Error de servidor");
     error.response = { status: res.status };
