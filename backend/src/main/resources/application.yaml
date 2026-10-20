@@ -31,12 +31,3 @@ server:
         http-only: true  # el JavaScript no puede leer la cookie de sesion
         same-site: lax   # no se envia en peticiones desde otros sitios
         # secure: true   # ACTIVAR cuando el sistema se sirva por HTTPS
-
-azure:
-  tenant-id: "TU_TENANT_ID_DE_AZURE"
-  client-id: "TU_CLIENT_ID_DE_LA_APP"
-  client-secret: "TU_CLIENT_SECRET"
-
-excel:
-  file:
-    item-id: "ID_DEL_ARCHIVO_EN_CLOUD"
