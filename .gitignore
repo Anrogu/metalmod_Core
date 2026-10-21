@@ -33,3 +33,8 @@ build/
 .vscode/
 # Variables de entorno
 .env
+.env.bak
+respaldos/
+/respaldo_seguro.sql
+/V1_*.sql
+/migracion.sql
