@@ -114,6 +114,8 @@ public class SecurityConfig {
                 "http://192.168.1.52:8081",
                 "http://localhost:8081",
                 "http://192.168.1.52",
+                "http://192.168.1.53:8081",
+                "http://192.168.1.53",
                 "http://localhost:5174"
         ));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"));
