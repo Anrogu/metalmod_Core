@@ -7,6 +7,7 @@ set -euo pipefail
 cd "$(dirname "$0")/.."
 
 [ "$(id -u)" -ne 0 ] || { echo "ERROR: no ejecutes esto como root (usa tu usuario, en el grupo docker)."; exit 1; }
+docker info >/dev/null 2>&1 || { echo "ERROR: tu usuario no puede usar Docker. Cierra sesión y vuelve a entrar (o ejecuta: newgrp docker)."; exit 1; }
 [ -f .env ] || { echo "ERROR: falta .env (no viaja en Git; créalo a partir de .env.example)."; exit 1; }
 
 if ! git diff --quiet || ! git diff --cached --quiet; then
@@ -41,7 +42,9 @@ read -rp "¿Continuar con el despliegue? (s/N) " R
 echo ">> 1/4 Respaldo previo de la base..."
 mkdir -p respaldos && chmod 700 respaldos
 RESPALDO="respaldos/antes-de-desplegar-$(date +%F-%H%M)-$ANTES.sql"
-docker compose exec -T db pg_dump -U "$USUARIO" "$BD" > "$RESPALDO"
+if ! docker compose exec -T db pg_dump -U "$USUARIO" "$BD" > "$RESPALDO"; then
+  rm -f "$RESPALDO"; echo "ERROR: no se pudo hacer el respaldo; no despliego."; exit 1
+fi
 [ -s "$RESPALDO" ] || { rm -f "$RESPALDO"; echo "ERROR: el respaldo salió vacío; no despliego."; exit 1; }
 chmod 600 "$RESPALDO"
 echo "   guardado en $RESPALDO"
