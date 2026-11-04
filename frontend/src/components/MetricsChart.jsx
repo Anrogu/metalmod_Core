@@ -570,6 +570,13 @@ function tipoDe(r) {
   return typeof t === "string" && t.trim() ? t.trim() : SIN_TIPO;
 }
 
+function minutosTotales(r) {
+  return (
+    (Number(r.tiempoAccionMinutos) || 0) +
+    (Number(r.tiempoEsperaMinutos) || 0)
+  );
+}
+
 // Agrupa por el campo indicado: cuenta ocurrencias y suma minutos invertidos
 function agruparDatos(registros, campo) {
   if (!Array.isArray(registros) || registros.length === 0) return [];
@@ -581,7 +588,7 @@ function agruparDatos(registros, campo) {
 
     const g = grupos.get(valor) || { nombre: valor, cantidad: 0, minutos: 0 };
     g.cantidad += 1;
-    g.minutos += Number(r.tiempoInvertidoMinutos) || 0;
+    g.minutos += minutosTotales(r);
     grupos.set(valor, g);
   }
 
@@ -607,7 +614,7 @@ function agruparPorTecnicoYTipo(registros) {
     const fila = porTecnico.get(tecnico) || { nombre: tecnico, total: 0, minutos: 0 };
     fila[tipo] = (fila[tipo] || 0) + 1;
     fila.total += 1;
-    fila.minutos += Number(r.tiempoInvertidoMinutos) || 0;
+    fila.minutos += minutosTotales(r);
     porTecnico.set(tecnico, fila);
   }
 

@@ -31,8 +31,13 @@ public record MantenimientoRequestDto(
         @NotNull
         Long idTecnico,
 
+        @NotNull
         @PositiveOrZero
-        Integer tiempoInvertidoMinutos,
+        Integer tiempoAccionMinutos,
+
+        @NotNull
+        @PositiveOrZero
+        Integer tiempoEsperaMinutos,
 
         @NotNull
         Long tipoMantenimiento

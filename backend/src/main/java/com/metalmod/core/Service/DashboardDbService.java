@@ -62,7 +62,8 @@ public class DashboardDbService {
                 tecnico != null ? tecnico.getNombre() : null,
                 tecnico != null && Boolean.TRUE.equals(tecnico.getActivo()),
                 tipoMantenimiento != null ? tipoMantenimiento.getNombre() : null,
-                m.getTiempoInvertidoMinutos()
+                m.getTiempoAccionMinutos(),
+                m.getTiempoEsperaMinutos()
         );
     }
 

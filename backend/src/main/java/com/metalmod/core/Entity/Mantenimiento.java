@@ -53,8 +53,13 @@ public class Mantenimiento {
     private Tecnico tecnico;
 
 
-    @Column(name= "tiempo_invertido_minutos")
-    private Integer tiempoInvertidoMinutos;
+    @NotNull
+    @Column(name = "tiempo_accion_minutos", nullable = false)
+    private Integer tiempoAccionMinutos;
+
+    @NotNull
+    @Column(name = "tiempo_espera_minutos", nullable = false)
+    private Integer tiempoEsperaMinutos;
 
     @NotNull
     @ManyToOne(fetch = FetchType.LAZY, optional = false)

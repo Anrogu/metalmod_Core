@@ -8,6 +8,7 @@ public record MantenimientoDashboardRecordDto(
         String nombreTecnico,
         Boolean activoTecnico,
         String tipoMantenimiento,
-        Integer tiempoInvertidoMinutos
+        Integer tiempoAccionMinutos,
+        Integer tiempoEsperaMinutos
 ) {
 }

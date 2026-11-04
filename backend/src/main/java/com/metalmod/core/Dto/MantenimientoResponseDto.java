@@ -18,7 +18,8 @@ public record MantenimientoResponseDto(
         String nombreRefaccion,
         Long idTecnico,
         String nombreTecnico, // <-- Asegúrate de agregar esta línea
-        Integer tiempoInvertidoMinutos,
+        Integer tiempoAccionMinutos,
+        Integer tiempoEsperaMinutos,
         Long tipoMantenimiento,
         String nombreTipoMantenimiento
 ) {

@@ -19,8 +19,10 @@ const FORM_VACIO = {
   buscadorRefaccion: "", 
   idTecnico: "",
   idTipoMantenimiento: "",
-  horas: "0",
-  minutos: "0",
+  horasAccion: "0",
+  minutosAccion: "0",
+  horasEspera: "0",
+  minutosEspera: "0",
 };
 
 // IDs para controlar el comportamiento del formulario según el tipo de mantenimiento
@@ -43,6 +45,10 @@ const TAREAS_RECORRIDO = [
 ];
 
 const POR_PAGINA = 10;
+
+function aMinutos(horas, minutos) {
+  return (Number(horas) || 0) * 60 + (Number(minutos) || 0);
+}
 
 export default function MantenimientosPage() {
   const { esAdmin } = useSesion();
@@ -186,7 +192,8 @@ export default function MantenimientosPage() {
       return;
     }
 
-    const tiempoInvertidoMinutos = (Number(form.horas) || 0) * 60 + (Number(form.minutos) || 0);
+    const tiempoAccionMinutos = aMinutos(form.horasAccion, form.minutosAccion);
+    const tiempoEsperaMinutos = aMinutos(form.horasEspera, form.minutosEspera);
 
     const payload = {
       idMaquina: maquinaSeleccionada.id,
@@ -196,7 +203,8 @@ export default function MantenimientosPage() {
       idRefaccion: esTipoSinDetalle ? null : (refaccionSeleccionada ? refaccionSeleccionada.id : null),
       idTecnico: form.idTecnico ? Number(form.idTecnico) : null, 
       tipoMantenimiento: form.idTipoMantenimiento ? Number(form.idTipoMantenimiento) : null,
-      tiempoInvertidoMinutos: tiempoInvertidoMinutos > 0 ? tiempoInvertidoMinutos : null,
+      tiempoAccionMinutos,
+      tiempoEsperaMinutos,
     };
 
     try {
@@ -419,25 +427,60 @@ export default function MantenimientosPage() {
           )}
 
           <label>
-            Tiempo invertido
+            Tiempo de acción
             <div className="mant-form__tiempo-row">
               <input
                 type="number"
                 min="0"
-                value={form.horas}
-                onChange={(e) => actualizarCampo("horas", e.target.value)}
+                required
+                value={form.horasAccion}
+                onChange={(e) => actualizarCampo("horasAccion", e.target.value)}
               />
               <span>h</span>
               <input
                 type="number"
                 min="0"
                 max="59"
-                value={form.minutos}
-                onChange={(e) => actualizarCampo("minutos", e.target.value)}
+                required
+                value={form.minutosAccion}
+                onChange={(e) => actualizarCampo("minutosAccion", e.target.value)}
               />
               <span>min</span>
             </div>
           </label>
+
+          <label>
+            Tiempo de espera
+            <div className="mant-form__tiempo-row">
+              <input
+                type="number"
+                min="0"
+                required
+                value={form.horasEspera}
+                onChange={(e) => actualizarCampo("horasEspera", e.target.value)}
+              />
+              <span>h</span>
+              <input
+                type="number"
+                min="0"
+                max="59"
+                required
+                value={form.minutosEspera}
+                onChange={(e) => actualizarCampo("minutosEspera", e.target.value)}
+              />
+              <span>min</span>
+            </div>
+          </label>
+
+          <p className="mant-form__tiempo-total">
+            Tiempo total:{" "}
+            <strong>
+              {formatearTiempo(
+                aMinutos(form.horasAccion, form.minutosAccion) +
+                  aMinutos(form.horasEspera, form.minutosEspera)
+              )}
+            </strong>
+          </p>
 
           <button type="submit" className="mant-form__submit">
             Registrar ticket
@@ -504,7 +547,9 @@ export default function MantenimientosPage() {
               <th>Fecha</th>
               <th>Falla / Tarea</th>
               <th>Técnico</th>
-              <th>Tiempo</th>
+              <th>T. acción</th>
+              <th>T. espera</th>
+              <th>T. total</th>
               <th></th>
             </tr>
           </thead>
@@ -516,7 +561,14 @@ export default function MantenimientosPage() {
                 <td>{t.fecha}</td>
                 <td>{t.falla}</td>
                 <td>{t.nombreTecnico || t.tecnico || "—"}</td>
-                <td>{formatearTiempo(t.tiempoInvertidoMinutos)}</td>
+                <td>{formatearTiempo(t.tiempoAccionMinutos)}</td>
+                <td>{formatearTiempo(t.tiempoEsperaMinutos)}</td>
+                <td>
+                  {formatearTiempo(
+                    (Number(t.tiempoAccionMinutos) || 0) +
+                      (Number(t.tiempoEsperaMinutos) || 0)
+                  )}
+                </td>
                 <td>
                   {esAdmin && (
                     <button type="button" onClick={() => manejarEliminar(t.id)}>
