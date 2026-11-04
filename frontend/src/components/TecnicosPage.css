@@ -1,0 +1,265 @@
+.tecnicos-page {
+  display: grid;
+  grid-template-columns: 320px 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+.tecnicos-toast {
+  position: fixed;
+  bottom: 30px;
+  right: 30px;
+  background-color: #28a745;
+  color: white;
+  padding: 16px 24px;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  font-weight: bold;
+  animation: tecnicos-fade-in-up 0.3s ease-out;
+}
+
+@keyframes tecnicos-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.tecnicos-form-panel {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.tecnicos-form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  margin-top: 12px;
+}
+
+.tecnicos-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+  color: #929aa2;
+}
+
+.tecnicos-form input[type="text"] {
+  background: #1e2226;
+  border: 1px solid #3a4148;
+  color: #edeae3;
+  padding: 8px 10px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+  border-radius: 2px;
+}
+
+.tecnicos-form input[type="text"]:focus {
+  outline: none;
+  border-color: #e85d25;
+}
+
+.tecnicos-form__check {
+  flex-direction: row !important;
+  align-items: flex-start;
+  gap: 8px !important;
+  line-height: 1.35;
+  cursor: pointer;
+}
+
+.tecnicos-form__check input {
+  margin-top: 2px;
+  accent-color: #e85d25;
+}
+
+.tecnicos-form__actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 4px;
+}
+
+.tecnicos-form__submit {
+  background: #e85d25;
+  border: none;
+  color: #1e2226;
+  font-weight: 600;
+  padding: 10px 16px;
+  cursor: pointer;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 13px;
+}
+
+.tecnicos-form__actions button:not(.tecnicos-form__submit) {
+  background: transparent;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  padding: 10px 16px;
+  cursor: pointer;
+}
+
+.tecnicos-form__error {
+  color: #e85d25;
+  font-size: 12.5px;
+  margin: 0;
+}
+
+.tecnicos-list-panel {
+  min-height: 300px;
+}
+
+.tecnicos-filtros {
+  display: flex;
+  gap: 8px;
+  margin: 12px 0 4px;
+  flex-wrap: wrap;
+}
+
+.tecnicos-filtros select,
+.tecnicos-filtros input {
+  background: #1e2226;
+  border: 1px solid #3a4148;
+  color: #edeae3;
+  padding: 6px 8px;
+  font-family: "IBM Plex Sans", sans-serif;
+  font-size: 12.5px;
+}
+
+.tecnicos-filtros input {
+  min-width: 250px;
+}
+
+.tecnicos-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 12px;
+  font-size: 13px;
+  font-family: "IBM Plex Sans", sans-serif;
+}
+
+.tecnicos-table th {
+  text-align: left;
+  padding: 8px;
+  border-bottom: 1px solid #3a4148;
+  color: #929aa2;
+  font-weight: 600;
+}
+
+.tecnicos-table td {
+  padding: 8px;
+  border-bottom: 1px solid #2b3035;
+  color: #edeae3;
+}
+
+.tecnicos-table__fila--inactiva td {
+  color: #929aa2;
+}
+
+.tecnicos-table__estado {
+  display: inline-block;
+  padding: 1px 8px;
+  border: 1px solid #3a4148;
+  font-size: 10.5px;
+  border-radius: 10px;
+  text-transform: uppercase;
+}
+
+.tecnicos-table__estado--activo {
+  border-color: #6bbf7a;
+  color: #6bbf7a;
+}
+
+.tecnicos-table__estado--inactivo {
+  border-color: #929aa2;
+  color: #929aa2;
+}
+
+.tecnicos-table__acciones {
+  display: flex;
+  gap: 6px;
+}
+
+.tecnicos-table__acciones button {
+  background: transparent;
+  border: 1px solid #3a4148;
+  color: #929aa2;
+  padding: 4px 10px;
+  cursor: pointer;
+  font-size: 12px;
+}
+
+.tecnicos-table__acciones button:hover {
+  border-color: #e85d25;
+  color: #e85d25;
+}
+
+.tecnicos-table__vacio {
+  text-align: center;
+  color: #929aa2;
+  padding: 20px;
+}
+
+@media (max-width: 768px) {
+  .tecnicos-page {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+
+  .tecnicos-form input[type="text"] {
+    padding: 12px 10px;
+  }
+
+  .tecnicos-form__actions {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tecnicos-form__actions button {
+    width: 100%;
+    padding: 12px 16px;
+  }
+
+  .tecnicos-filtros {
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .tecnicos-filtros select,
+  .tecnicos-filtros input {
+    width: 100%;
+    min-width: auto;
+    padding: 10px 12px;
+  }
+
+  .tecnicos-list-panel {
+    max-width: 100vw;
+  }
+
+  .tecnicos-table {
+    display: block;
+    overflow-x: auto;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .tecnicos-table__acciones button {
+    padding: 8px 12px;
+  }
+
+  .tecnicos-toast {
+    left: 16px;
+    right: 16px;
+    bottom: 16px;
+    justify-content: center;
+  }
+}

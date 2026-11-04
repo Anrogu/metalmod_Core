@@ -80,7 +80,7 @@ export default function MantenimientosPage() {
       const [listaMaquinas, listaRefacciones, listaTecnicos, listaTipos] = await Promise.all([
         obtenerMaquinas(),
         obtenerRefacciones(),
-        obtenerTecnicos(),
+        obtenerTecnicos({ soloActivos: true }),
         obtenerTiposMantenimiento(),
       ]);
       setMaquinas(listaMaquinas);

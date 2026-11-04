@@ -60,6 +60,7 @@ public class DashboardDbService {
                 refaccion != null ? refaccion.getNombre() : null,
                 calcularTrimestre(m.getFecha()),
                 tecnico != null ? tecnico.getNombre() : null,
+                tecnico != null && Boolean.TRUE.equals(tecnico.getActivo()),
                 tipoMantenimiento != null ? tipoMantenimiento.getNombre() : null,
                 m.getTiempoInvertidoMinutos()
         );

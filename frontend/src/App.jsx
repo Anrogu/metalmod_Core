@@ -4,6 +4,7 @@ import MetricsChart from "./components/MetricsChart";
 import MaquinasPage from "./components/MaquinasPage";
 import RefaccionesPage from "./components/RefaccionesPage";
 import MantenimientosPage from "./components/MantenimientosPage";
+import TecnicosPage from "./components/TecnicosPage";
 import LoginPage from "./components/LoginPage";
 import { obtenerSesion, cerrarSesion } from "./api/authApi";
 import { apiFetch, EVENTO_SESION_EXPIRADA } from "./api/http";
@@ -17,6 +18,8 @@ function Panel({ sesion, onCerrarSesion }) {
   const [estado, setEstado] = useState("idle");
   const [errorMsg, setErrorMsg] = useState("");
   const [vistaApp, setVistaApp] = useState("dashboard");
+  // Solo el administrador puede gestionar el catálogo de técnicos.
+  const esAdmin = sesion.rol === "ADMINISTRADOR";
 
   async function cargarDesdeBaseDeDatos() {
     setEstado("loading");
@@ -117,6 +120,20 @@ function Panel({ sesion, onCerrarSesion }) {
         >
           Mantenimientos
         </button>
+        {esAdmin && (
+          <button
+            type="button"
+            className="app-nav__btn"
+            onClick={() => setVistaApp("tecnicos")}
+            style={{
+              border: `1px solid ${vistaApp === "tecnicos" ? "#e85d25" : "#3a4148"}`,
+              background: vistaApp === "tecnicos" ? "rgba(232, 93, 37, 0.1)" : "transparent",
+              color: vistaApp === "tecnicos" ? "#e85d25" : "#929aa2",
+            }}
+          >
+            Técnicos
+          </button>
+        )}
       </nav>
 
       {/* Clases layout--page agregadas para control de padding en celular */}
@@ -135,6 +152,12 @@ function Panel({ sesion, onCerrarSesion }) {
       {vistaApp === "mantenimientos" && (
         <main className="layout layout--page" style={{ display: "block", padding: "24px" }}>
           <MantenimientosPage />
+        </main>
+      )}
+
+      {vistaApp === "tecnicos" && esAdmin && (
+        <main className="layout layout--page" style={{ display: "block", padding: "24px" }}>
+          <TecnicosPage />
         </main>
       )}
 

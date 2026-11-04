@@ -1,4 +1,4 @@
 package com.metalmod.core.Dto;
 
-public record TecnicoResponseDto(Long id, String nombre) {
+public record TecnicoResponseDto(Long id, String nombre, Boolean activo) {
 }

@@ -83,6 +83,8 @@ public class GlobalExceptionHandler {
             mensaje = "Ya existe una maquina con ese nombre.";
         } else if (detalle.contains("ux_refaccion_codigo_lower")) {
             mensaje = "Ya existe una refaccion con ese codigo.";
+        } else if (detalle.contains("ux_tecnico_nombre_lower")) {
+            mensaje = "Ya existe un tecnico con ese nombre.";
         } else if (detalle.contains("foreign key")) {
             mensaje = "No se puede completar la operacion: el registro esta en uso por otros datos.";
         } else if (detalle.contains("duplicate key")) {

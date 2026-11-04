@@ -18,10 +18,11 @@ async function manejarRespuesta(res) {
   return res.json();
 }
 
-export async function obtenerTecnicos(nombre) {
+export async function obtenerTecnicos({ nombre, soloActivos } = {}) {
   // Agregamos window.location.origin al constructor URL
   const url = new URL(`${API_BASE}/tecnicos`, window.location.origin);
   if (nombre) url.searchParams.set("nombre", nombre);
+  if (soloActivos) url.searchParams.set("soloActivos", "true");
   return manejarRespuesta(await apiFetch(url));
 }
 

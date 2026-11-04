@@ -33,12 +33,15 @@ public interface MantenimientoRepository extends JpaRepository<Mantenimiento, Lo
     List<Mantenimiento> findAllByOrderByFechaDescIdDesc();
     // ---------------------------------------------------------------------
 
-    // Trae maquina, marca y refaccion ya resueltas en una sola query (evita N+1 al mapear al dashboard)
+    // Trae maquina, marca, refaccion, tecnico y tipo ya resueltos en una sola
+    // query (evita N+1 al mapear al dashboard).
     @Query("""
             SELECT m FROM Mantenimiento m
             JOIN FETCH m.idMaquina mq
             LEFT JOIN FETCH mq.idMarca
             LEFT JOIN FETCH m.idRefaccion
+            LEFT JOIN FETCH m.tecnico
+            LEFT JOIN FETCH m.tipoMantenimiento
             """)
     List<Mantenimiento> findAllConRelaciones();
 

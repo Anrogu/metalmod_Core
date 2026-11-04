@@ -67,11 +67,15 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
   const config = VISTAS[vista];
   const esTecnicos = vista === "tecnicos";
 
-  // Tipos de mantenimiento presentes en los datos (botones y colores estables)
+  // Tipos de mantenimiento presentes en los datos (botones y colores estables).
+  // En la vista de técnicos solo cuentan los activos, igual que la gráfica.
   const tiposDisponibles = useMemo(() => {
-    const set = new Set(refacciones.map(tipoDe));
+    const base = esTecnicos
+      ? refacciones.filter((r) => r.activoTecnico === true)
+      : refacciones;
+    const set = new Set(base.map(tipoDe));
     return Array.from(set).sort();
-  }, [refacciones]);
+  }, [refacciones, esTecnicos]);
 
   const colorPorTipo = useMemo(() => {
     const mapa = {};
@@ -97,15 +101,24 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
   );
   const datosTop10 = useMemo(() => datosCompletos.slice(0, 10).reverse(), [datosCompletos]);
 
-  // Técnicos agrupados por tipo de mantenimiento, con tiempo acumulado
-  const tecnicosPorTipo = useMemo(
-    () => agruparPorTecnicoYTipo(refaccionesFiltradas),
+  // Técnicos agrupados por tipo de mantenimiento, con tiempo acumulado.
+  // Solo se toman registros de técnicos activos: los dados de baja conservan
+  // su historial, pero no aparecen en la gráfica ni en la tabla de técnicos.
+  const registrosTecnicosActivos = useMemo(
+    () => refaccionesFiltradas.filter((r) => r.activoTecnico === true),
     [refaccionesFiltradas]
+  );
+  const tecnicosPorTipo = useMemo(
+    () => agruparPorTecnicoYTipo(registrosTecnicosActivos),
+    [registrosTecnicosActivos]
   );
   const tecnicosTop10 = useMemo(
     () => tecnicosPorTipo.filas.slice(0, 10).reverse(),
     [tecnicosPorTipo]
   );
+
+  // En la vista de técnicos el estado vacío debe considerar solo los activos.
+  const registrosVisibles = esTecnicos ? registrosTecnicosActivos : refaccionesFiltradas;
 
   // Tabla fija de refacciones
   const todasLasRefacciones = useMemo(
@@ -168,7 +181,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
         {estado === "idle" && <EstadoVacio />}
         {estado === "loading" && <EstadoCargando />}
         {estado === "error" && <EstadoError mensaje={errorMsg} />}
-        {estado === "ready" && refaccionesFiltradas.length === 0 && (
+        {estado === "ready" && registrosVisibles.length === 0 && (
           <EstadoVacio
             mensaje={`No hay datos para mostrar${
               sufijoPeriodo !== "Todos" ? ` en ${sufijoPeriodo}` : " en este momento"
@@ -176,7 +189,7 @@ export default function MetricsChart({ refacciones = [], estado, errorMsg }) {
           />
         )}
 
-        {estado === "ready" && refaccionesFiltradas.length > 0 && (
+        {estado === "ready" && registrosVisibles.length > 0 && (
           <div className="chart-panel__content">
             {/* SECCIÓN 1: GRÁFICA */}
             <div className="chart-panel__chart-wrapper">
