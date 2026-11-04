@@ -6,8 +6,10 @@ import com.metalmod.core.Entity.*;
 import com.metalmod.core.Mapper.MantenimientoMapper;
 import com.metalmod.core.Repository.*;
 import jakarta.persistence.EntityNotFoundException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -68,17 +70,42 @@ public class MantenimientoService {
         return mantenimientoMapper.toResponse(buscarOLanzar(id));
     }
 
-    // Sin filtros: todos. Con idMaquina: historial de esa maquina. Con rango de fechas: ese periodo.
+    // Sin filtros: todos. Los filtros se pueden combinar (maquina + rango
+    // abierto/cerrado de fechas); antes, si venian maquina y fechas juntas, las
+    // fechas se ignoraban.
     public List<MantenimientoResponseDto> listar(Long idMaquina, LocalDate desde, LocalDate hasta) {
+        if (desde != null && hasta != null && desde.isAfter(hasta)) {
+            throw new ResponseStatusException(HttpStatus.BAD_REQUEST,
+                    "La fecha 'desde' no puede ser posterior a 'hasta'.");
+        }
+
         List<Mantenimiento> registros;
 
         if (idMaquina != null) {
-            registros = mantenimientoRepository.findByIdMaquina_IdOrderByIdDesc(idMaquina);
+            if (desde != null && hasta != null) {
+                registros = mantenimientoRepository
+                        .findByIdMaquina_IdAndFechaBetweenOrderByFechaDescIdDesc(idMaquina, desde, hasta);
+            } else if (desde != null) {
+                registros = mantenimientoRepository
+                        .findByIdMaquina_IdAndFechaGreaterThanEqualOrderByFechaDescIdDesc(idMaquina, desde);
+            } else if (hasta != null) {
+                registros = mantenimientoRepository
+                        .findByIdMaquina_IdAndFechaLessThanEqualOrderByFechaDescIdDesc(idMaquina, hasta);
+            } else {
+                registros = mantenimientoRepository
+                        .findByIdMaquina_IdOrderByFechaDescIdDesc(idMaquina);
+            }
         } else if (desde != null && hasta != null) {
-            registros = mantenimientoRepository.findByFechaBetweenOrderByFechaDesc(desde, hasta);
+            registros = mantenimientoRepository
+                    .findByFechaBetweenOrderByFechaDescIdDesc(desde, hasta);
+        } else if (desde != null) {
+            registros = mantenimientoRepository
+                    .findByFechaGreaterThanEqualOrderByFechaDescIdDesc(desde);
+        } else if (hasta != null) {
+            registros = mantenimientoRepository
+                    .findByFechaLessThanEqualOrderByFechaDescIdDesc(hasta);
         } else {
-            // Cambiamos el findAll() genérico por el ordenado
-            registros = mantenimientoRepository.findAllByOrderByIdDesc();
+            registros = mantenimientoRepository.findAllByOrderByFechaDescIdDesc();
         }
 
         return registros.stream().map(mantenimientoMapper::toResponse).toList();

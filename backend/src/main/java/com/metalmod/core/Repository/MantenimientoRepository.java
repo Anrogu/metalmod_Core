@@ -12,12 +12,25 @@ import java.util.List;
 @Repository
 public interface MantenimientoRepository extends JpaRepository<Mantenimiento, Long> {
 
-    // --- MÉTODOS PARA EL CRUD (Listado en tabla con orden descendente) ---
-    List<Mantenimiento> findByIdMaquina_IdOrderByIdDesc(Long idMaquina);
+    // --- MÉTODOS PARA EL CRUD (Listado en tabla, mas reciente primero) ---
+    List<Mantenimiento> findByIdMaquina_IdOrderByFechaDescIdDesc(Long idMaquina);
 
-    List<Mantenimiento> findByFechaBetweenOrderByFechaDesc(LocalDate desde, LocalDate hasta);
+    List<Mantenimiento> findByIdMaquina_IdAndFechaBetweenOrderByFechaDescIdDesc(
+            Long idMaquina, LocalDate desde, LocalDate hasta);
 
-    List<Mantenimiento> findAllByOrderByIdDesc();
+    List<Mantenimiento> findByIdMaquina_IdAndFechaGreaterThanEqualOrderByFechaDescIdDesc(
+            Long idMaquina, LocalDate desde);
+
+    List<Mantenimiento> findByIdMaquina_IdAndFechaLessThanEqualOrderByFechaDescIdDesc(
+            Long idMaquina, LocalDate hasta);
+
+    List<Mantenimiento> findByFechaBetweenOrderByFechaDescIdDesc(LocalDate desde, LocalDate hasta);
+
+    List<Mantenimiento> findByFechaGreaterThanEqualOrderByFechaDescIdDesc(LocalDate desde);
+
+    List<Mantenimiento> findByFechaLessThanEqualOrderByFechaDescIdDesc(LocalDate hasta);
+
+    List<Mantenimiento> findAllByOrderByFechaDescIdDesc();
     // ---------------------------------------------------------------------
 
     // Trae maquina, marca y refaccion ya resueltas en una sola query (evita N+1 al mapear al dashboard)

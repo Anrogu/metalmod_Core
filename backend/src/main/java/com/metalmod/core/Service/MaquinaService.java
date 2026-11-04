@@ -45,9 +45,11 @@ public class MaquinaService {
 
     @Transactional
     public MaquinaResponseDto crear(MaquinaRequestDto request) {
-        validarNombreDisponible(request.nombre(), null);
+        String nombre = normalizarNombre(request.nombre());
+        validarNombreDisponible(nombre, null);
 
         Maquina maquina = maquinaMapper.toEntity(request);
+        maquina.setNombre(nombre);
         maquina.setIdMarca(resolverMarca(request.idMarca()));
         maquina.setIdModelo(resolverModelo(request.idModelo()));
         maquina.setIdEstado(estadoPorCodigo(CODIGO_ESTADO_INICIAL));
@@ -70,9 +72,11 @@ public class MaquinaService {
     @Transactional
     public MaquinaResponseDto actualizar(Long id, MaquinaRequestDto request) {
         Maquina maquina = buscarOLanzar(id);
-        validarNombreDisponible(request.nombre(), id);
+        String nombre = normalizarNombre(request.nombre());
+        validarNombreDisponible(nombre, id);
 
         maquinaMapper.aplicarDatos(maquina, request);
+        maquina.setNombre(nombre);
         maquina.setIdMarca(resolverMarca(request.idMarca()));
         maquina.setIdModelo(resolverModelo(request.idModelo()));
 
@@ -90,10 +94,11 @@ public class MaquinaService {
      * Verifica que no exista otra máquina con el mismo nombre (sin distinguir
      * mayúsculas ni espacios en los extremos). Si idExistente no es null,
      * se excluye esa máquina de la comparación (caso de edición).
+     *
+     * El nombre que se guarda es el ya normalizado, para que coincida con el
+     * índice único ux_maquina_nombre_lower de la base de datos.
      */
-    private void validarNombreDisponible(String nombre, Long idExistente) {
-        String nombreLimpio = nombre == null ? "" : nombre.trim();
-
+    private void validarNombreDisponible(String nombreLimpio, Long idExistente) {
         boolean duplicado = (idExistente == null)
                 ? maquinaRepository.existsByNombreIgnoreCase(nombreLimpio)
                 : maquinaRepository.existsByNombreIgnoreCaseAndIdNot(nombreLimpio, idExistente);
@@ -102,6 +107,10 @@ public class MaquinaService {
             throw new ResponseStatusException(HttpStatus.CONFLICT,
                     "Ya existe una máquina con el nombre \"" + nombreLimpio + "\".");
         }
+    }
+
+    private String normalizarNombre(String nombre) {
+        return nombre == null ? "" : nombre.trim();
     }
 
     /**

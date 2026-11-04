@@ -51,7 +51,6 @@ Gracias a Docker, levantar el proyecto es un proceso rápido. Sigue estos pasos:
     SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/metalmod_core
     SPRING_DATASOURCE_USERNAME=postgres
     SPRING_DATASOURCE_PASSWORD='TuPasswordSeguro$'
-    SPRING_JPA_HIBERNATE_DDL_AUTO=none
 
     Levanta los contenedores:
     Ejecuta el siguiente comando para construir y desplegar la base de datos, el backend y el frontend:
@@ -63,7 +62,7 @@ Gracias a Docker, levantar el proyecto es un proceso rápido. Sigue estos pasos:
 
         Frontend: http://localhost:8081
 
-        Backend API: http://localhost:8083
+        Backend API: no se publica al host; se consume a través de Nginx en http://localhost:8081/api/v1
 
 ### 🤝 Contribución
 
