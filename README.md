@@ -1,85 +1,75 @@
-# 
-# 🔩 Metalmod Core
+🔩 Metalmod Core
+Metalmod Core is a fullstack open-source application designed to optimize and digitize the logging of maintenance reports for CNC machines, lathes, and industrial equipment within the plant.
 
-Metalmod Core es una aplicación de código abierto fullstack diseñada para optimizar y digitalizar el registro de reportes de mantenimiento de máquinas CNC, tornos y equipos industriales dentro de la planta.
-## 🚀 Características
+🚀 Features
+Maintenance Management: Detailed logging of incidents and preventive/corrective maintenance.
 
-    Gestión de Mantenimiento: Registro detallado de incidencias y mantenimientos preventivos/correctivos.
+Traceability: Complete history of machinery status.
 
-    Trazabilidad: Historial completo del estado de la maquinaria.
+Scalable Architecture: Containerized deployment for easy implementation in any environment.
 
-    Arquitectura Escalable: Despliegue en contenedores para facilitar su implementación en cualquier entorno.
+🛠️ Technologies (Stack)
+The project is built using modern technologies to ensure performance and scalability:
 
-## 🛠️ Tecnologías (Stack)
+Backend: Java ☕ | Spring Boot 🌿
 
-El proyecto está construido utilizando tecnologías modernas para garantizar rendimiento y escalabilidad:
+Database: PostgreSQL 🐘
 
-    Backend: Java ☕ | Spring Boot 🌿
+Frontend: React ⚛️ | Node.js 🇳
 
-    Base de Datos: PostgreSQL 🐘
+Deployment: Docker 🐳
 
-    Frontend: React ⚛️ | Node.js 🇳
+⚙️ Prerequisites
+Before starting, make sure you have the following installed:
 
-    Despliegue: Docker 🐳
+Git
 
-## ⚙️ Requisitos Previos
+Docker and Docker Compose
 
-Antes de comenzar, asegúrate de tener instalado:
+📦 Installation and Execution
+Thanks to Docker, setting up the project is a quick process. Follow these steps:
 
-    Git
+Clone the repository:
 
-    Docker y Docker Compose
+Bash
+git clone https://github.com/tu-usuario/metalmod-core.git
+cd metalmod-core
+Configure environment variables:
+Create a .env file in the project root (you can base it on a .env.example if it exists) and configure your PostgreSQL credentials:
 
-## 📦 Instalación y Ejecución
+Fragmento de código
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD='TuPasswordSeguro$'
+POSTGRES_DB=metalmod_core
+SERVER_PORT=8080
+SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/metalmod_core
+SPRING_DATASOURCE_USERNAME=postgres
+SPRING_DATASOURCE_PASSWORD='TuPasswordSeguro$'
+Start the containers:
+Run the following command to build and deploy the database, backend, and frontend:
 
-Gracias a Docker, levantar el proyecto es un proceso rápido. Sigue estos pasos:
+Bash
+docker compose up -d --build
+Access the application:
 
-    Clona el repositorio:
-    Bash
+Frontend: http://localhost:8081
 
-    git clone https://github.com/tu-usuario/metalmod-core.git
-    cd metalmod-core
+Backend API: Not published to the host; consumed via Nginx at http://localhost:8081/api/v1
 
-    Configura las variables de entorno:
-    Crea un archivo .env en la raíz del proyecto (puedes basarte en un .env.example si existe) y configura tus credenciales de PostgreSQL:
-    Fragmento de código
+🤝 Contributing
+All Pull Requests are welcome! If you want to contribute to the project:
 
-    POSTGRES_USER=postgres
-    POSTGRES_PASSWORD='TuPasswordSeguro$'
-    POSTGRES_DB=metalmod_core
-    SERVER_PORT=8080
-    SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/metalmod_core
-    SPRING_DATASOURCE_USERNAME=postgres
-    SPRING_DATASOURCE_PASSWORD='TuPasswordSeguro$'
+Fork the repository.
 
-    Levanta los contenedores:
-    Ejecuta el siguiente comando para construir y desplegar la base de datos, el backend y el frontend:
-    Bash
+Create a branch for your new feature or fix (git checkout -b feature/NewFeature).
 
-    docker compose up -d --build
+Generate an Issue describing the change you want to make to discuss it with the community.
 
-    Accede a la aplicación:
+Commit your changes (git commit -m 'Add new feature').
 
-        Frontend: http://localhost:8081
+Push to the branch (git push origin feature/NewFeature).
 
-        Backend API: no se publica al host; se consume a través de Nginx en http://localhost:8081/api/v1
+Open a Pull Request.
 
-### 🤝 Contribución
-
-¡Todas las Pull Requests son bienvenidas! Si deseas contribuir al proyecto:
-
-    Haz un Fork del repositorio.
-
-    Crea una rama para tu nueva característica o corrección (git checkout -b feature/NuevaCaracteristica).
-
-    Genera un Issue describiendo el cambio que deseas realizar para discutirlo con la comunidad.
-
-    Haz Commit de tus cambios (git commit -m 'Añade nueva característica').
-
-    Haz Push a la rama (git push origin feature/NuevaCaracteristica).
-
-    Abre una Pull Request.
-
-### 📄 Licencia
-
-Desarrollado para Metalmod.
+📄 License
+Developed for Metalmod.
