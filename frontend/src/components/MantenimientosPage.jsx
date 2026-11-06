@@ -117,6 +117,16 @@ export default function MantenimientosPage() {
     }
   }
 
+  // El stock cambia al registrar o eliminar un ticket; se recarga para que el
+  // autocompletado muestre las existencias reales.
+  async function actualizarRefacciones() {
+    try {
+      setRefacciones(await obtenerRefacciones());
+    } catch (err) {
+      setError(err.message);
+    }
+  }
+
   const ticketsFiltrados = tickets.filter((t) => {
     if (filtroTipo) {
       const idTipoTicket = t.idTipoMantenimiento || t.tipoMantenimiento; 
@@ -192,6 +202,12 @@ export default function MantenimientosPage() {
       return;
     }
 
+    if (!esTipoSinDetalle && refaccionSeleccionada &&
+        (Number(refaccionSeleccionada.cantidadStock) || 0) <= 0) {
+      setError(`No hay stock disponible de "${refaccionSeleccionada.nombre}".`);
+      return;
+    }
+
     const tiempoAccionMinutos = aMinutos(form.horasAccion, form.minutosAccion);
     const tiempoEsperaMinutos = aMinutos(form.horasEspera, form.minutosEspera);
 
@@ -211,6 +227,7 @@ export default function MantenimientosPage() {
       await crearMantenimiento(payload);
       setForm(FORM_VACIO);
       await cargarTickets();
+      await actualizarRefacciones();
       mostrarExito("¡Ticket de mantenimiento registrado correctamente!");
     } catch (err) {
       setError(err.message);
@@ -224,6 +241,7 @@ export default function MantenimientosPage() {
     try {
       await eliminarMantenimiento(id);
       await cargarTickets();
+      await actualizarRefacciones();
       mostrarExito("¡Ticket eliminado correctamente!");
     } catch (err) {
       setError(err.message);
@@ -409,18 +427,33 @@ export default function MantenimientosPage() {
               />
               {mostrarListaRefacciones && refaccionesSugeridas.length > 0 && (
                 <ul className="mant-autocomplete-list">
-                  {refaccionesSugeridas.map((r) => (
-                    <li
-                      key={r.id}
-                      className="mant-autocomplete-item"
-                      onClick={() => {
-                        actualizarCampo("buscadorRefaccion", r.nombre);
-                        setMostrarListaRefacciones(false);
-                      }}
-                    >
-                      {r.nombre}
-                    </li>
-                  ))}
+                  {refaccionesSugeridas.map((r) => {
+                    const sinStock = (Number(r.cantidadStock) || 0) <= 0;
+                    return (
+                      <li
+                        key={r.id}
+                        className={
+                          "mant-autocomplete-item" +
+                          (sinStock ? " mant-autocomplete-item--sin-stock" : "")
+                        }
+                        title={
+                          sinStock
+                            ? "Sin existencias registradas"
+                            : `${r.cantidadStock} en existencia`
+                        }
+                        onClick={() => {
+                          if (sinStock) return;
+                          actualizarCampo("buscadorRefaccion", r.nombre);
+                          setMostrarListaRefacciones(false);
+                        }}
+                      >
+                        <span>{r.nombre}</span>
+                        <span className="mant-autocomplete-stock">
+                          {sinStock ? "sin stock" : `${r.cantidadStock} disp.`}
+                        </span>
+                      </li>
+                    );
+                  })}
                 </ul>
               )}
             </label>

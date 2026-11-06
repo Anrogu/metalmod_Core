@@ -63,6 +63,20 @@ public class MantenimientoService {
                             "El Tipo de mantenimientp con id " + request.tipoMantenimiento() + " no existe."));
         }
         Mantenimiento mantenimiento = mantenimientoMapper.toEntity(request, maquina, refaccion, tecnico, tipoMantenimiento);
+
+        // El uso de una refaccion descuenta una unidad del inventario. La
+        // actualizacion es condicional (cantidad_stock > 0), asi que dos
+        // peticiones simultaneas no pueden dejar el stock en negativo.
+        if (refaccion != null) {
+            int descontadas = refaccionRepository.descontarUnaUnidad(refaccion.getId());
+            if (descontadas == 0) {
+                throw new IllegalStateException(
+                        "No hay stock disponible de la refaccion '" + refaccion.getNombre()
+                                + "'. Registra existencias antes de volver a usarla.");
+            }
+        }
+        mantenimiento.setStockDescontado(refaccion != null);
+
         return mantenimientoMapper.toResponse(mantenimientoRepository.save(mantenimiento));
     }
 
@@ -113,7 +127,16 @@ public class MantenimientoService {
 
     @Transactional
     public void eliminar(Long id) {
-        mantenimientoRepository.delete(buscarOLanzar(id));
+        Mantenimiento mantenimiento = buscarOLanzar(id);
+
+        // Solo se devuelve stock si este ticket lo desconto al registrarse.
+        // Los tickets historicos tienen stock_descontado = false.
+        if (Boolean.TRUE.equals(mantenimiento.getStockDescontado())
+                && mantenimiento.getIdRefaccion() != null) {
+            refaccionRepository.devolverUnaUnidad(mantenimiento.getIdRefaccion().getId());
+        }
+
+        mantenimientoRepository.delete(mantenimiento);
     }
 
     private Mantenimiento buscarOLanzar(Long id) {

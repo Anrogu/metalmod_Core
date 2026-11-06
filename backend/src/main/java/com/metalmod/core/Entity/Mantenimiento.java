@@ -5,6 +5,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import lombok.Getter;
 import lombok.Setter;
+import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -65,4 +66,12 @@ public class Mantenimiento {
     @ManyToOne(fetch = FetchType.LAZY, optional = false)
     @JoinColumn(name = "id_tipo_mantenimiento", nullable = false)
     private TipoMantenimiento tipoMantenimiento;
+
+    // Indica si este ticket ya desconto una unidad del stock de su refaccion.
+    // Los tickets historicos quedan en false para no devolver stock que nunca
+    // se desconto al eliminarlos.
+    @NotNull
+    @ColumnDefault("false")
+    @Column(name = "stock_descontado", nullable = false)
+    private Boolean stockDescontado;
 }

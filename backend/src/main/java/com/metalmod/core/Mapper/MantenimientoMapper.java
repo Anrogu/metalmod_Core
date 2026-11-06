@@ -21,6 +21,7 @@ public interface MantenimientoMapper {
     @Mapping(target = "tipoMantenimiento", source = "tipoMantenimiento")
     @Mapping(target = "tiempoAccionMinutos", source = "dto.tiempoAccionMinutos")
     @Mapping(target = "tiempoEsperaMinutos", source = "dto.tiempoEsperaMinutos")
+    @Mapping(target = "stockDescontado", ignore = true)
     Mantenimiento toEntity(MantenimientoRequestDto dto, Maquina maquina, Refaccion refaccion, Tecnico tecnico, TipoMantenimiento tipoMantenimiento);
 
     @Mapping(target = "idMaquina", source = "idMaquina.id")
