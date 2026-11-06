@@ -56,6 +56,36 @@ Thanks to Docker, setting up the project is a quick process. Follow these steps:
     *   **Frontend:** http://localhost:8081
     *   **Backend API:** Not published to the host; consumed via Nginx at http://localhost:8081/api/v1
 
+### 💾 Automated backups
+
+`scripts/respaldo.sh` creates a compressed PostgreSQL backup and sends it over SSH to another PC. It is scheduled with `cron` to run **every Friday at 15:00 (local time)**:
+
+```bash
+0 15 * * 5 /home/angelroberto/Documentos/ideas/core/scripts/respaldo.sh >/dev/null 2>&1
+```
+
+The destination is configured in `.env` (not committed to Git):
+
+```env
+RESPALDO_SSH_USUARIO=angelroberto
+RESPALDO_SSH_HOST=192.168.1.52
+RESPALDO_SSH_DIRECTORIO=/home/angelroberto/respaldos
+RESPALDO_SSH_PUERTO=22
+RESPALDO_SSH_LLAVE=/home/angelroberto/.ssh/id_ed25519_respaldos
+RESPALDO_RETENCION_DIAS=30
+RESPALDO_REMOTO_DIAS=90
+```
+
+For passwordless operation, the public key of `RESPALDO_SSH_LLAVE` must be authorized in the destination PC's `~/.ssh/authorized_keys`, and that server must accept key authentication (`PubkeyAuthentication yes`).
+
+It can also be run manually at any time:
+
+```bash
+./scripts/respaldo.sh
+```
+
+Local backups are stored in `respaldos/` and each run is logged to `respaldos/respaldo.log`.
+
 ### 🤝 Contributing
 
 All Pull Requests are welcome! If you want to contribute to the project:
