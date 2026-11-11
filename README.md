@@ -86,6 +86,24 @@ It can also be run manually at any time:
 
 Local backups are stored in `respaldos/` and each run is logged to `respaldos/respaldo.log`.
 
+### ♻️ Restoring a backup
+
+`scripts/restaurar.sh` restores a `.sql` or `.sql.gz` dump. Before touching anything it saves and verifies a safety backup of the current state in `respaldos/pre-restauracion-*.sql.gz`.
+
+```bash
+# Full restore: drops and recreates the database, then loads schema and data.
+# Use this for a fresh deployment or to roll back to an old backup.
+bash scripts/restaurar.sh metalmod_core-2026-11-11_191930.sql
+
+# Data-only restore: keeps the existing schema and Flyway history and reloads
+# only the rows. Use it when the database is already migrated (e.g. V5).
+bash scripts/restaurar.sh --solo-datos respaldos/metalmod_core-2026-11-11_191930.sql.gz
+```
+
+Options: `--si` skips the confirmation prompt, `--no-arrancar` does not start the backend/frontend at the end.
+
+The script also checks row counts, verifies there are no broken foreign keys, logs every run to `respaldos/restauracion.log`, and waits until the backend is serving again (`http://localhost:8081`).
+
 ### 🤝 Contributing
 
 All Pull Requests are welcome! If you want to contribute to the project:
